@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { 
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
   Scroll,
   Search,
   Filter,
@@ -14,25 +14,25 @@ import {
   Lock,
   ChevronRight,
   ChevronLeft,
-  FileText
-} from 'lucide-react';
-import { Button } from '../components/ui/Button';
-import { fetchDocuments } from '../lib/documents';
-import { formatDate } from '../lib/utils';
-import { PaymentModal } from '../components/PaymentModal';
-import type { Document } from '../types';
+  FileText,
+} from "lucide-react";
+import { Button } from "../components/ui/Button";
+import { fetchDocuments } from "../lib/documents";
+import { formatDate } from "../lib/utils";
+import { PaymentModal } from "../components/PaymentModal";
+import type { Document } from "../types";
 
 export default function ViewAllLegislation() {
   const navigate = useNavigate();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
-    type: '',
-    year: '',
-    status: ''
+    type: "",
+    year: "",
+    status: "",
   });
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
@@ -48,13 +48,13 @@ export default function ViewAllLegislation() {
     setError(null);
     try {
       const data = await fetchDocuments(
-        { category: 'Acts of Parliament' },
-        { field: 'created_at', direction: 'desc' }
+        { category: "Acts of Parliament" },
+        { field: "created_at", direction: "desc" }
       );
       setDocuments(data);
     } catch (err) {
-      setError('Failed to load legislation. Please try again.');
-      console.error('Error loading legislation:', err);
+      setError("Failed to load legislation. Please try again.");
+      console.error("Error loading legislation:", err);
     } finally {
       setLoading(false);
     }
@@ -63,21 +63,24 @@ export default function ViewAllLegislation() {
   const handleDownload = (doc: Document) => {
     setShowPaymentModal(true);
     setSelectedPlan({
-      name: 'Bronze',
+      name: "Bronze",
       price: 10,
-      duration: '1 Day',
-      features: ['Document Downloads', 'Basic Search', '24/7 Support']
+      duration: "1 Day",
+      features: ["Document Downloads", "Basic Search", "24/7 Support"],
     });
   };
 
-  const filteredDocuments = documents.filter(doc => {
-    const matchesSearch = 
+  const filteredDocuments = documents.filter((doc) => {
+    const matchesSearch =
       doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doc.metadata.keywords?.some(k => k.toLowerCase().includes(searchTerm.toLowerCase()));
+      doc.metadata.keywords?.some((k) =>
+        k.toLowerCase().includes(searchTerm.toLowerCase())
+      );
 
     const matchesType = !filters.type || doc.metadata.type === filters.type;
     const matchesYear = !filters.year || doc.created_at.includes(filters.year);
-    const matchesStatus = !filters.status || doc.metadata.status === filters.status;
+    const matchesStatus =
+      !filters.status || doc.metadata.status === filters.status;
 
     return matchesSearch && matchesType && matchesYear && matchesStatus;
   });
@@ -95,9 +98,12 @@ export default function ViewAllLegislation() {
         <div className="space-y-8">
           {/* Header */}
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Recent Legislation</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Recent Legislation
+            </h1>
             <p className="mt-2 text-lg text-gray-600">
-              Browse and search through recent Acts of Parliament and legislative documents
+              Browse and search through recent Acts of Parliament and
+              legislative documents
             </p>
           </div>
 
@@ -134,7 +140,9 @@ export default function ViewAllLegislation() {
                   </label>
                   <select
                     value={filters.type}
-                    onChange={(e) => setFilters({ ...filters, type: e.target.value })}
+                    onChange={(e) =>
+                      setFilters({ ...filters, type: e.target.value })
+                    }
                     className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   >
                     <option value="">All Types</option>
@@ -149,12 +157,19 @@ export default function ViewAllLegislation() {
                   </label>
                   <select
                     value={filters.year}
-                    onChange={(e) => setFilters({ ...filters, year: e.target.value })}
+                    onChange={(e) =>
+                      setFilters({ ...filters, year: e.target.value })
+                    }
                     className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   >
                     <option value="">All Years</option>
-                    {Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i).map(year => (
-                      <option key={year} value={year}>{year}</option>
+                    {Array.from(
+                      { length: 10 },
+                      (_, i) => new Date().getFullYear() - i
+                    ).map((year) => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -164,7 +179,9 @@ export default function ViewAllLegislation() {
                   </label>
                   <select
                     value={filters.status}
-                    onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                    onChange={(e) =>
+                      setFilters({ ...filters, status: e.target.value })
+                    }
                     className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   >
                     <option value="">All Statuses</option>
@@ -214,7 +231,7 @@ export default function ViewAllLegislation() {
                               <div className="mt-1 flex items-center gap-4 text-sm text-gray-500">
                                 <span className="flex items-center">
                                   <FileText className="mr-1.5 h-4 w-4" />
-                                  {doc.metadata.type || 'Act'}
+                                  {doc.metadata.type || "Act"}
                                 </span>
                                 <span className="flex items-center">
                                   <Calendar className="mr-1.5 h-4 w-4" />
@@ -252,7 +269,9 @@ export default function ViewAllLegislation() {
                   <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200">
                     <Button
                       variant="outline"
-                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      }
                       disabled={currentPage === 1}
                     >
                       <ChevronLeft className="mr-2 h-4 w-4" />
@@ -263,7 +282,9 @@ export default function ViewAllLegislation() {
                     </span>
                     <Button
                       variant="outline"
-                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                      }
                       disabled={currentPage === totalPages}
                     >
                       Next
@@ -282,7 +303,8 @@ export default function ViewAllLegislation() {
                         Get Full Access
                       </h3>
                       <p className="mt-2 text-blue-200">
-                        Subscribe to download legislation and access premium features
+                        Subscribe to download legislation and access premium
+                        features
                       </p>
                     </div>
                     <Button

@@ -130,10 +130,68 @@ export async function uploadDocument(
   }
 }
 
+// export async function fetchDocuments(
+//   filters: DocumentFilter = {},
+//   sort: DocumentSort = { field: "created_at", direction: "desc" }
+//   start: number,
+//   limit: number,
+//   offset: number
+// ) {
+//   try {
+//     let query = supabase.from("documents").select("*").limit(limit);
+
+//     // Apply filters
+//     if (filters.category) {
+//       query = query.eq("category", filters.category);
+//     }
+//     if (filters.subcategory) {
+//       query = query.eq("subcategory", filters.subcategory);
+//     }
+//     if (filters.status) {
+//       query = query.eq("metadata->status", filters.status);
+//     }
+//     if (filters.dateRange?.start) {
+//       query = query.gte("created_at", filters.dateRange.start);
+//     }
+//     if (filters.dateRange?.end) {
+//       query = query.lte("created_at", filters.dateRange.end);
+//     }
+//     if (filters.type && filters.type.length > 0) {
+//       query = query.in("metadata->type", filters.type);
+//     }
+//     if (filters.keywords && filters.keywords.length > 0) {
+//       query = query.or(
+//         `title.ilike.%${filters.keywords.join(
+//           "%"
+//         )}%,metadata->keywords.cs.{${filters.keywords.join(",")}}`
+//       );
+//     }
+
+//     // Apply sorting
+//     if (sort.field.startsWith("metadata.")) {
+//       const metadataField = sort.field.split(".")[1];
+//       query = query.order(`metadata->${metadataField}`, {
+//         ascending: sort.direction === "asc",
+//       });
+//     } else {
+//       query = query.order(sort.field, { ascending: sort.direction === "asc" });
+//     }
+
+//     const { data, error } = await query;
+//     if (error) throw error;
+//     return data as Document[];
+//   } catch (error) {
+//     console.error("Error fetching documents:", error);
+//     throw error;
+//   }
+// }
+
 export async function fetchDocuments(
   filters: DocumentFilter = {},
-  sort: DocumentSort = { field: "created_at", direction: "desc" }
-) {
+  sort: DocumentSort = { field: "created_at", direction: "desc" },
+  limit?: number,
+  offset?: number
+): Promise<Document[]> {
   try {
     let query = supabase.from("documents").select("*");
 
@@ -174,8 +232,14 @@ export async function fetchDocuments(
       query = query.order(sort.field, { ascending: sort.direction === "asc" });
     }
 
+    // Apply pagination
+    if (offset && limit) {
+      query = query.range(offset, offset + limit - 1);
+    }
+
     const { data, error } = await query;
     if (error) throw error;
+
     return data as Document[];
   } catch (error) {
     console.error("Error fetching documents:", error);
