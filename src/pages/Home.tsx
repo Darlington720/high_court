@@ -362,6 +362,13 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Search Results */}
+      {searchResults.length > 0 && (
+        <div className="mx-auto max-w-7xl px-6 py-8">
+          <SearchResults results={searchResults} />
+        </div>
+      )}
+
       {/* Recent Sections */}
       <div className="mx-auto max-w-7xl px-6 py-12">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
@@ -510,13 +517,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-
-      {/* Search Results */}
-      {searchResults.length > 0 && (
-        <div className="mx-auto max-w-7xl px-6 py-8">
-          <SearchResults results={searchResults} />
-        </div>
-      )}
 
       {/* Subscription Packages */}
       <div className="bg-gradient-to-b from-gray-50 to-white py-24 sm:py-32">
