@@ -49,6 +49,7 @@ import {
   FileBarChart,
 } from "lucide-react";
 import { Button } from "./ui/Button";
+import EduciteLogo from "../../assets/imgs/educite-logo.png";
 
 interface LayoutProps {
   children: ReactNode;
@@ -187,11 +188,7 @@ function DashboardLayout({ children }: LayoutProps) {
             <div className="flex-shrink-0 flex items-center px-4">
               <Link to="/" className="flex items-center">
                 {/* Logo */}
-                <img
-                  src="assets/imgs/educite-logo.png"
-                  alt="Educ"
-                  className="h-8 w-auto"
-                />
+                <img src={EduciteLogo} alt="Educ" className="h-8 w-auto" />
               </Link>
             </div>
 
@@ -247,11 +244,7 @@ function DashboardLayout({ children }: LayoutProps) {
         <div className="flex items-center flex-shrink-0 px-6">
           <Link to="/" className="flex items-center">
             {/* Logo */}
-            <img
-              src="assets/imgs/educite-logo.png"
-              alt="Educite Logo"
-              className="h-8 w-auto"
-            />
+            <img src={EduciteLogo} alt="Educite Logo" className="h-8 w-auto" />
           </Link>
         </div>
 
@@ -427,7 +420,7 @@ function MainLayout({ children }: LayoutProps) {
               <Link to="/" className="flex items-center">
                 {/* Logo */}
                 <img
-                  src="assets/imgs/educite-logo.png"
+                  src={EduciteLogo}
                   alt="Educite Logo"
                   className="h-10 w-auto"
                 />
