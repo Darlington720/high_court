@@ -383,7 +383,28 @@ function MainLayout({ children }: LayoutProps) {
       title: "Hansards",
       columns: generateHansardYears(),
     },
-
+    courts: {
+      title: "Courts of Record",
+      subcategories: [
+        "Supreme Court of Uganda",
+        "Court of Appeal of Uganda",
+        "Constitutional Court of Uganda",
+        {
+          name: "High Court of Uganda",
+          divisions: [
+            "Commercial Court Division",
+            "Anti-Corruption Division",
+            "Civil Division",
+            "Criminal Division",
+            "Family Division",
+            "International Crimes Division",
+            "Land Division",
+            "Industrial Court Division",
+            "Election Petitions",
+          ],
+        },
+      ],
+    },
     acts: {
       title: "Acts of Parliament",
       subcategories: ["Acts of Parliament"],
