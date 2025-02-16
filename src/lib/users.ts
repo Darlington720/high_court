@@ -1,4 +1,4 @@
-import { supabase } from "./supabase";
+import { checkSupabaseConnection, supabase } from "./supabase";
 
 export interface User {
   id: string;
@@ -26,7 +26,7 @@ export async function fetchUsers() {
       .select(
         `
         *,
-        auth_user:id (
+       auth.user:id (
           email,
           last_sign_in_at,
           created_at

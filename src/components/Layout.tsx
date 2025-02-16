@@ -390,28 +390,7 @@ function MainLayout({ children }: LayoutProps) {
       title: "Hansards",
       columns: generateHansardYears(),
     },
-    courts: {
-      title: "Courts of Record",
-      subcategories: [
-        "Supreme Court of Uganda",
-        "Court of Appeal of Uganda",
-        "Constitutional Court of Uganda",
-        {
-          name: "High Court of Uganda",
-          divisions: [
-            "Commercial Court Division",
-            "Anti-Corruption Division",
-            "Civil Division",
-            "Criminal Division",
-            "Family Division",
-            "International Crimes Division",
-            "Land Division",
-            "Industrial Court Division",
-            "Election Petitions",
-          ],
-        },
-      ],
-    },
+
     acts: {
       title: "Acts of Parliament",
       subcategories: ["Acts of Parliament"],
@@ -428,11 +407,11 @@ function MainLayout({ children }: LayoutProps) {
       title: "Others",
       subcategories: [
         { name: "About", href: "/about" },
-        { name: "Partners", href: "/partners" },
-        { name: "Educite Archives", href: "/educite-archives" },
-        { name: "Educite Reports", href: "/educite-reports" },
+        // { name: "Partners", href: "/partners" },
         { name: "Open Access Resources", href: "/open-access-resources" },
         { name: "Archival Materials", href: "/archival-materials" },
+        // { name: "Educite Archives", href: "/educite-archives" },
+        // { name: "Educite Reports", href: "/educite-reports" },
       ],
     },
   };
@@ -481,7 +460,11 @@ function MainLayout({ children }: LayoutProps) {
 
                   {/* Mega Menu Dropdown */}
                   {megaMenuOpen === key && (
-                    <div className="absolute left-0 mt-2 w-screen max-w-max bg-gradient-to-b from-blue-50 to-white rounded-lg shadow-xl ring-1 ring-black ring-opacity-5 z-50 transform transition-all duration-200 ease-out">
+                    <div
+                      className="absolute left-0 mt-0 w-screen max-w-max bg-gradient-to-b from-blue-50 to-white rounded-lg shadow-xl ring-1 ring-black ring-opacity-5 z-50 transform transition-all duration-200 ease-out"
+                      onMouseEnter={() => setMegaMenuOpen(key)}
+                      onMouseLeave={() => setMegaMenuOpen(null)}
+                    >
                       <div className="p-6">
                         <div className="flex items-center space-x-2 mb-4 pb-4 border-b-2 border-blue-100">
                           {key === "hansards" && (

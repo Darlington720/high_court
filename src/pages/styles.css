@@ -1,0 +1,177 @@
+ /** bootstrap_tab_css.twig **/
+ #s-lg-tabs-container .nav-tabs>li>a,
+ #s-lg-tabs-container .nav-tabs>li>button,
+ #s-lg-tabs-container .nav-pills>li>a,
+ #s-lg-tabs-container .nav-pills>li>button {
+     border: 1px solid transparent;
+     -webkit-border-radius: 4px 4px 0 0;
+     -moz-border-radius: 4px 4px 0 0;
+     border-radius: 4px 4px 0 0;
+     background-color: #2f5ea2;
+     color: #fff;
+     font-weight: bold;
+     padding: 4px 15px;
+ }
+
+ #s-lg-tabs-container .nav-tabs {
+     border-bottom: 0;
+ }
+
+ #s-lg-tabs-container .nav-tabs>li#s-lg-admin-tab-add>a {
+     -webkit-border-radius: 4px 4px 0 0;
+     -moz-border-radius: 4px 4px 0 0;
+     border-radius: 4px 4px 0 0;
+ }
+
+ #s-lg-tabs-container .nav-tabs>li>a:hover,
+ #s-lg-tabs-container .nav-tabs>li>button:hover,
+ #s-lg-tabs-container .nav-pills>li>a:hover,
+ #s-lg-tabs-container .nav-pills>li>button:hover {
+     border: 1px solid transparent;
+     -webkit-border-radius: 4px 4px 0 0;
+     -moz-border-radius: 4px 4px 0 0;
+     border-radius: 4px 4px 0 0;
+     background-color: #3871dc;
+     color: #fff;
+ }
+
+ #s-lg-tabs-container .nav-tabs>.active>a,
+ #s-lg-tabs-container .nav-tabs>.active>button,
+ #s-lg-tabs-container .nav-pills>.active>a,
+ #s-lg-tabs-container .nav-pills>.active>button {
+     color: #fff;
+     cursor: default;
+     background-color: #3871dc;
+     border: 1px solid transparent;
+     -webkit-border-radius: 4px 4px 0 0;
+     -moz-border-radius: 4px 4px 0 0;
+     border-radius: 4px 4px 0 0;
+     border-bottom-color: transparent;
+     font-weight: bold;
+ }
+
+ #s-lg-tabs-container .nav-tabs>.active>.s-lg-subtab-ul>.active>a,
+ #s-lg-tabs-container .nav-tabs>.active>.s-lg-subtab-ul>.active>button {
+     color: #fff;
+     cursor: default;
+     background-color: #3871dc;
+     border-bottom-color: transparent;
+ }
+
+ #s-lg-tabs-container .nav-tabs>.active>a:hover,
+ #s-lg-tabs-container .nav-pills>.active>a:hover,
+ #s-lg-tabs-container .nav-tabs>.active>button:hover,
+ #s-lg-tabs-container .nav-pills>.active>button:hover {
+     color: #fff;
+     cursor: pointer;
+     background-color: #3871dc;
+     border: 1px solid transparent;
+     -webkit-border-radius: 4px 4px 0 0;
+     -moz-border-radius: 4px 4px 0 0;
+     border-radius: 4px 4px 0 0;
+     border-bottom-color: transparent;
+     font-weight: bold;
+ }
+
+ #s-lg-tabs-container .nav .dropdown-toggle .caret {
+     border-top-color: #e1e1e1;
+ }
+
+ #s-lg-tabs-container .nav-tabs button.dropdown-toggle .caret {
+     margin-left: 2px;
+     margin-top: -3px;
+ }
+
+ #s-lg-tabs-container .nav-tabs>li>a.s-lg-tab-drop {
+     border-radius: 0 4px 0 0;
+     padding: 4px 6px 4px 3px;
+     border-left: 1px solid transparent;
+ }
+
+ #s-lg-tabs-container .nav-tabs>li>button.s-lg-tab-drop {
+     border-radius: 0 4px 0 0;
+     padding: 4px 6px 0px 3px;
+     border-left: 1px solid transparent;
+     margin-right: 2px;
+ }
+
+ #s-lg-tabs-container .nav-tabs>li>a.s-lg-tab-drop:hover {
+     border-radius: 0 4px 0 0;
+     border-left: 1px solid #bbb;
+     padding: 4px 6px 4px 3px;
+ }
+
+ #s-lg-tabs-container .nav-tabs>li>button.s-lg-tab-drop:hover {
+     border-radius: 0 4px 0 0;
+     border-left: 1px solid #bbb;
+     padding: 4px 6px 0px 3px;
+ }
+
+ #s-lg-tabs-container .nav-tabs>li>a.s-lg-tab-top-link,
+ #s-lg-tabs-container .nav-tabs>li>a.s-lg-tab-top-link:hover,
+ #s-lg-tabs-container .nav-tabs>li>button.s-lg-tab-top-link,
+ #s-lg-tabs-container .nav-tabs>li>button.s-lg-tab-top-link:hover {
+     border-radius: 4px 0 0 0;
+     font-weight: bold;
+     padding: 4px 5px 4px 10px;
+ }
+
+ .nav-tabs>li>a.s-lg-tab-top-link,
+ .nav-tabs>li>button.s-lg-tab-top-link {
+     margin-right: 0px;
+ }
+
+ #s-lg-tabs-container .nav-pills>li>a.s-lg-tab-drop,
+ #s-lg-tabs-container .nav-pills>li>button.s-lg-tab-drop {
+     border-radius: 0 4px 0 0;
+     padding: 4px 8px 4px 8px;
+     border-left: 1px solid transparent;
+     position: absolute;
+     right: 0;
+ }
+
+ #s-lg-tabs-container .nav-pills>li>a.s-lg-tab-drop:hover,
+ #s-lg-tabs-container .nav-pills>li>button.s-lg-tab-drop:hover {
+     border-radius: 0 4px 0 0;
+     border-left: 1px solid #bbb;
+     padding: 4px 8px 4px 8px;
+ }
+
+ #s-lg-tabs-container .nav-pills>li>a.s-lg-tab-top-link,
+ #s-lg-tabs-container .nav-pills>li>a.s-lg-tab-top-link:hover,
+ #s-lg-tabs-container .nav-pills>li>button.s-lg-tab-top-link,
+ #s-lg-tabs-container .nav-pills>li>button.s-lg-tab-top-link:hover {
+     width: 100%;
+     float: left;
+     border-radius: 4px 0 0 0;
+     font-weight: bold;
+     padding: 4px 15px 4px 15px;
+ }
+
+ /** !bootstrap_tab_css.twig **/
+ .s-lib-box {
+     border-color: #00456a;
+     border-width: 1px;
+     box-shadow: 0 8px 6px -6px #aaaaaa;
+     border-radius: 4px 4px 4px 4px;
+     background-color: #fff;
+ }
+
+ .s-lib-box-std .s-lib-box-title {
+     background-color: #00456a;
+     background-image: none;
+     color: #ffffff;
+     border-bottom: 1px solid #00456a;
+ }
+
+ .s-lib-box .s-lib-box-title {
+     background-color: #00456a;
+     background-image: none;
+     color: #ffffff;
+     border-bottom: 1px solid #00456a;
+     border-radius: 3px 3px 0px 0px;
+ }
+
+ .s-lib-box .s-lg-box-footer {
+     border-radius: 0px 0px 3px 3px;
+ }

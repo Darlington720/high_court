@@ -28,6 +28,7 @@ export async function uploadDocument(
       "Statutory Instruments": "statutory",
       Gazettes: "gazettes",
       "7th Revised Edition": "revised",
+      "Archival Materials": "archival_materials",
     };
 
     const bucketId = bucketMap[category];
@@ -232,6 +233,7 @@ export async function fetchDocuments(
       query = query.order(sort.field, { ascending: sort.direction === "asc" });
     }
 
+    console.log("limit", limit);
     // Apply pagination
     if (offset && limit) {
       query = query.range(offset, offset + limit - 1);

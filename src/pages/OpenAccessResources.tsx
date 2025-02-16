@@ -82,7 +82,7 @@ export default function OpenAccessResources() {
         <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
             <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
-              Open Access Resourcces
+              Open Access Resources
             </h1>
             <p className="mt-6 text-lg leading-8 text-blue-100">
               Empowering legal professionals and researchers with comprehensive
@@ -92,19 +92,127 @@ export default function OpenAccessResources() {
         </div>
       </div>
 
-      {/* Mission Statement */}
-      <div className="relative isolate overflow-hidden bg-white py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl lg:text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Our Mission
-            </h2>
-            <p className="mt-6 text-lg leading-8 text-gray-600">
-              Educite Virtual Library's primary purpose is to reinforce learning
-              and acquisition of legal knowledge by providing a more solid basis
-              for legal education and research. We enhance the quality of life
-              by drawing on digitally available content using ICT-based tools.
-            </p>
+      <div id="s-lg-box-wrapper-17927107" className="s-lg-box-wrapper-17927107">
+        <div id="s-lg-box-15150359-container" className="s-lib-box-container">
+          <div
+            id="s-lg-box-15150359"
+            className="s-lib-box s-lib-box-std s-lib-floating-box"
+          >
+            <div id="s-lg-box-collapse-15150359">
+              <div className="s-lib-box-content s-lib-floating-box-content">
+                <div id="s-lg-content-32819405" className="clearfix">
+                  <div className="titlebox">
+                    <h3>Open Access Books</h3>
+                  </div>
+
+                  <h5>
+                    <strong>Commonwealth iLibrary</strong>
+                  </h5>
+
+                  <p>
+                    The{" "}
+                    <a
+                      href="https://www.thecommonwealth-ilibrary.org/index.php/comsec/index"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Commonwealth iLibrary
+                    </a>{" "}
+                    is a collection of books, working papers, discussion papers,
+                    reports, and other materials published by the Commonwealth.
+                  </p>
+
+                  <h5>
+                    <strong>Directory of Open Access Books (DOAB)</strong>
+                  </h5>
+
+                  <p>
+                    <span style={{ fontSize: "14px" }}>
+                      <a
+                        href="https://www.doabooks.org/doab?uiLanguage=en"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        DOAB{" "}
+                      </a>
+                      aims to increase discoverability of open access books. All
+                      publishers included in DOAB are screened for their peer
+                      review and licensing policies. DOAB contains around 1000
+                      books with a law subject heading.
+                    </span>
+                  </p>
+
+                  <h5>
+                    <strong>
+                      OAPEN: Open Access Publishing in European Networks
+                    </strong>
+                  </h5>
+
+                  <p>
+                    <span style={{ fontSize: "14px" }}>
+                      The{" "}
+                      <a
+                        href="https://www.oapen.org/search?expand=subject&f1-subject=Law"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        OAPEN
+                      </a>{" "}
+                      library contains freely accessible academic books, mainly
+                      in the areas of humanities and social sciences. Law books
+                      included cover the areas of international law,
+                      jurisprudence and general issues, and laws of specific
+                      jurisdictions.
+                    </span>
+                  </p>
+
+                  <h5>
+                    <strong>
+                      OBserving Law - IALS Open Book Service for Law
+                    </strong>
+                  </h5>
+
+                  <p>
+                    <span style={{ fontSize: "14px" }}>
+                      <a
+                        href="https://ials.sas.ac.uk/digital/humanities-digital-library/observing-law-ials-open-book-service-law"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        OBserving Law
+                      </a>
+                    </span>
+                    <span style={{ fontSize: "14px" }}>
+                      {" "}
+                      is an open access book publishing initiative developed
+                      with the School of Advanced Study and the University of
+                      London Press.
+                    </span>
+                  </p>
+
+                  <h5>
+                    <strong>
+                      Sydney University Press Law books on AustLII
+                    </strong>
+                  </h5>
+
+                  <p>
+                    <span style={{ fontSize: "14px" }}>
+                      The Australian Legal Information Institute (AustLII) has a
+                      page listing a number of open access{" "}
+                      <a
+                        href="http://www.austlii.edu.au/cgi-bin/viewdb/au/journals/SydUPLawBk/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        law books published by the Sydney University Press
+                      </a>
+                      .{" "}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

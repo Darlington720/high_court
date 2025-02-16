@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   FileText,
@@ -20,9 +20,11 @@ import {
   Globe,
   Briefcase,
 } from "lucide-react";
+import type { Document } from "../types";
 import { Button } from "../components/ui/Button";
 import { SearchResults } from "../components/SearchResults";
 import { PaymentModal } from "../components/PaymentModal";
+import { fetchDocuments } from "../lib/documents";
 
 // Mock data for recent sections
 const recentData = {
@@ -180,6 +182,9 @@ export default function Home() {
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
   const [filters, setFilters] = useState({});
   const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<
     (typeof subscriptionPlans)[0] | null
@@ -213,6 +218,32 @@ export default function Home() {
     setShowPaymentModal(true);
   };
 
+  const loadDocuments = async () => {
+    console.log("loading judgements...");
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await fetchDocuments(
+        { category: "Courts of Record" },
+        { field: "created_at", direction: "desc" },
+        3,
+        0
+      );
+
+      console.log("judgements", data);
+      setDocuments(data);
+    } catch (err) {
+      setError("Failed to load judgments. Please try again.");
+      console.error("Error loading judgments:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadDocuments();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section with Search */}
@@ -229,7 +260,7 @@ export default function Home() {
           }}
         >
           {/* Overlay gradient */}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/95 to-blue-800/95" />
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-blue-800/80" />
         </div>
 
         {/* Content */}
@@ -237,7 +268,7 @@ export default function Home() {
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mx-auto max-w-2xl text-center">
               <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
-                Access to Legal Information made simple
+                Access to Legal Information made Simple
               </h1>
               <p className="mt-6 text-lg leading-8 text-blue-100">
                 Search through thousands of legal documents, court records, and
