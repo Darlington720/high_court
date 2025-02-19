@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { 
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
   Gavel,
   Search,
   Filter,
@@ -13,26 +13,26 @@ import {
   AlertCircle,
   Lock,
   ChevronRight,
-  ChevronLeft
-} from 'lucide-react';
-import { Button } from '../components/ui/Button';
-import { fetchDocuments } from '../lib/documents';
-import { formatDate } from '../lib/utils';
-import { PaymentModal } from '../components/PaymentModal';
-import type { Document } from '../types';
+  ChevronLeft,
+} from "lucide-react";
+import { Button } from "../components/ui/Button";
+import { fetchDocuments } from "../lib/documents";
+import { formatDate } from "../lib/utils";
+import { PaymentModal } from "../components/PaymentModal";
+import type { Document } from "../types";
 
 export default function ViewAllJudgments() {
   const navigate = useNavigate();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
-    court: '',
-    year: '',
-    judge: '',
-    caseType: ''
+    court: "",
+    year: "",
+    judge: "",
+    caseType: "",
   });
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
@@ -48,13 +48,14 @@ export default function ViewAllJudgments() {
     setError(null);
     try {
       const data = await fetchDocuments(
-        { category: 'Courts of Record' },
-        { field: 'created_at', direction: 'desc' }
+        { category: "Courts of Record" },
+        { field: "created_at", direction: "desc" }
       );
+
       setDocuments(data);
     } catch (err) {
-      setError('Failed to load judgments. Please try again.');
-      console.error('Error loading judgments:', err);
+      setError("Failed to load judgments. Please try again.");
+      console.error("Error loading judgments:", err);
     } finally {
       setLoading(false);
     }
@@ -64,24 +65,34 @@ export default function ViewAllJudgments() {
     // Show payment modal if user is not subscribed
     setShowPaymentModal(true);
     setSelectedPlan({
-      name: 'Bronze',
+      name: "Bronze",
       price: 10,
-      duration: '1 Day',
-      features: ['Document Downloads', 'Basic Search', '24/7 Support']
+      duration: "1 Day",
+      features: ["Document Downloads", "Basic Search", "24/7 Support"],
     });
   };
 
-  const filteredDocuments = documents.filter(doc => {
-    const matchesSearch = 
+  const filteredDocuments = documents.filter((doc) => {
+    const matchesSearch =
       doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doc.metadata.keywords?.some(k => k.toLowerCase().includes(searchTerm.toLowerCase()));
+      doc.metadata.keywords?.some((k) =>
+        k.toLowerCase().includes(searchTerm.toLowerCase())
+      );
 
     const matchesCourt = !filters.court || doc.subcategory === filters.court;
     const matchesYear = !filters.year || doc.created_at.includes(filters.year);
-    const matchesJudge = !filters.judge || doc.metadata.judge?.includes(filters.judge);
-    const matchesCaseType = !filters.caseType || doc.metadata.caseType === filters.caseType;
+    const matchesJudge =
+      !filters.judge || doc.metadata.judge?.includes(filters.judge);
+    const matchesCaseType =
+      !filters.caseType || doc.metadata.caseType === filters.caseType;
 
-    return matchesSearch && matchesCourt && matchesYear && matchesJudge && matchesCaseType;
+    return (
+      matchesSearch &&
+      matchesCourt &&
+      matchesYear &&
+      matchesJudge &&
+      matchesCaseType
+    );
   });
 
   // Pagination
@@ -97,7 +108,9 @@ export default function ViewAllJudgments() {
         <div className="space-y-8">
           {/* Header */}
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Recent Judgments</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Recent Judgments
+            </h1>
             <p className="mt-2 text-lg text-gray-600">
               Browse and search through recent court judgments
             </p>
@@ -136,13 +149,21 @@ export default function ViewAllJudgments() {
                   </label>
                   <select
                     value={filters.court}
-                    onChange={(e) => setFilters({ ...filters, court: e.target.value })}
+                    onChange={(e) =>
+                      setFilters({ ...filters, court: e.target.value })
+                    }
                     className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   >
                     <option value="">All Courts</option>
-                    <option value="Supreme Court of Uganda">Supreme Court</option>
-                    <option value="Court of Appeal of Uganda">Court of Appeal</option>
-                    <option value="Constitutional Court of Uganda">Constitutional Court</option>
+                    <option value="Supreme Court of Uganda">
+                      Supreme Court
+                    </option>
+                    <option value="Court of Appeal of Uganda">
+                      Court of Appeal
+                    </option>
+                    <option value="Constitutional Court of Uganda">
+                      Constitutional Court
+                    </option>
                     <option value="High Court of Uganda">High Court</option>
                   </select>
                 </div>
@@ -152,12 +173,19 @@ export default function ViewAllJudgments() {
                   </label>
                   <select
                     value={filters.year}
-                    onChange={(e) => setFilters({ ...filters, year: e.target.value })}
+                    onChange={(e) =>
+                      setFilters({ ...filters, year: e.target.value })
+                    }
                     className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   >
                     <option value="">All Years</option>
-                    {Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i).map(year => (
-                      <option key={year} value={year}>{year}</option>
+                    {Array.from(
+                      { length: 10 },
+                      (_, i) => new Date().getFullYear() - i
+                    ).map((year) => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -167,7 +195,9 @@ export default function ViewAllJudgments() {
                   </label>
                   <select
                     value={filters.caseType}
-                    onChange={(e) => setFilters({ ...filters, caseType: e.target.value })}
+                    onChange={(e) =>
+                      setFilters({ ...filters, caseType: e.target.value })
+                    }
                     className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   >
                     <option value="">All Types</option>
@@ -256,7 +286,9 @@ export default function ViewAllJudgments() {
                   <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200">
                     <Button
                       variant="outline"
-                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      }
                       disabled={currentPage === 1}
                     >
                       <ChevronLeft className="mr-2 h-4 w-4" />
@@ -267,7 +299,9 @@ export default function ViewAllJudgments() {
                     </span>
                     <Button
                       variant="outline"
-                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                      }
                       disabled={currentPage === totalPages}
                     >
                       Next
@@ -286,7 +320,8 @@ export default function ViewAllJudgments() {
                         Get Full Access
                       </h3>
                       <p className="mt-2 text-blue-200">
-                        Subscribe to download judgments and access premium features
+                        Subscribe to download judgments and access premium
+                        features
                       </p>
                     </div>
                     <Button

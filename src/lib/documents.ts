@@ -233,10 +233,9 @@ export async function fetchDocuments(
       query = query.order(sort.field, { ascending: sort.direction === "asc" });
     }
 
-    console.log("limit", limit);
     // Apply pagination
-    if (offset && limit) {
-      query = query.range(offset, offset + limit - 1);
+    if (limit) {
+      query = query.limit(limit);
     }
 
     const { data, error } = await query;

@@ -186,6 +186,10 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [judgements, setJudgments] = useState<Document[]>([]);
+  const [legislation, setLegislation] = useState<Document[]>([]);
+  const [hansards, setHansards] = useState<Document[]>([]);
+  const [gazettes, setGazettes] = useState<Document[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<
     (typeof subscriptionPlans)[0] | null
   >(null);
@@ -226,12 +230,32 @@ export default function Home() {
       const data = await fetchDocuments(
         { category: "Courts of Record" },
         { field: "created_at", direction: "desc" },
-        3,
-        0
+        3
       );
 
-      console.log("judgements", data);
-      setDocuments(data);
+      const legislationData = await fetchDocuments(
+        { category: "Acts of Parliament" },
+        { field: "created_at", direction: "desc" },
+        3
+      );
+
+      const hansardsData = await fetchDocuments(
+        { category: "Hansards" },
+        { field: "created_at", direction: "desc" },
+        3
+      );
+
+      const gazettesData = await fetchDocuments(
+        { category: "Gazettes" },
+        { field: "created_at", direction: "desc" },
+        3
+      );
+
+      // console.log("legislationData", legislationData);
+      setJudgments(data);
+      setLegislation(legislationData);
+      setHansards(hansardsData);
+      setGazettes(gazettesData);
     } catch (err) {
       setError("Failed to load judgments. Please try again.");
       console.error("Error loading judgments:", err);
@@ -423,16 +447,16 @@ export default function Home() {
               </Link>
             </div>
             <div className="divide-y divide-gray-200">
-              {recentData.judgments.map((item) => (
+              {judgements.map((item: any) => (
                 <div key={item.id} className="py-4">
                   <h3 className="text-sm font-medium text-gray-900">
                     {item.title}
                   </h3>
                   <div className="mt-1 flex items-center text-sm text-gray-500">
                     <Calendar className="mr-1.5 h-4 w-4" />
-                    {new Date(item.date).toLocaleDateString()}
+                    {new Date(item.created_at).toLocaleDateString()}
                     <span className="mx-2">•</span>
-                    {item.court}
+                    {item.subcategory}
                   </div>
                 </div>
               ))}
@@ -459,16 +483,16 @@ export default function Home() {
               </Link>
             </div>
             <div className="divide-y divide-gray-200">
-              {recentData.legislation.map((item) => (
+              {legislation.map((item) => (
                 <div key={item.id} className="py-4">
                   <h3 className="text-sm font-medium text-gray-900">
                     {item.title}
                   </h3>
                   <div className="mt-1 flex items-center text-sm text-gray-500">
                     <Calendar className="mr-1.5 h-4 w-4" />
-                    {new Date(item.date).toLocaleDateString()}
+                    {new Date(item.created_at).toLocaleDateString()}
                     <span className="mx-2">•</span>
-                    {item.type}
+                    {item.subcategory}
                   </div>
                 </div>
               ))}
@@ -495,16 +519,16 @@ export default function Home() {
               </Link>
             </div>
             <div className="divide-y divide-gray-200">
-              {recentData.hansards.map((item) => (
+              {hansards.map((item) => (
                 <div key={item.id} className="py-4">
                   <h3 className="text-sm font-medium text-gray-900">
                     {item.title}
                   </h3>
                   <div className="mt-1 flex items-center text-sm text-gray-500">
                     <Calendar className="mr-1.5 h-4 w-4" />
-                    {new Date(item.date).toLocaleDateString()}
+                    {new Date(item.created_at).toLocaleDateString()}
                     <span className="mx-2">•</span>
-                    {item.session} Session
+                    {item.subcategory} Session
                   </div>
                 </div>
               ))}
@@ -531,16 +555,16 @@ export default function Home() {
               </Link>
             </div>
             <div className="divide-y divide-gray-200">
-              {recentData.gazettes.map((item) => (
+              {gazettes.map((item) => (
                 <div key={item.id} className="py-4">
                   <h3 className="text-sm font-medium text-gray-900">
                     {item.title}
                   </h3>
                   <div className="mt-1 flex items-center text-sm text-gray-500">
                     <Calendar className="mr-1.5 h-4 w-4" />
-                    {new Date(item.date).toLocaleDateString()}
+                    {new Date(item.created_at).toLocaleDateString()}
                     <span className="mx-2">•</span>
-                    {item.type}
+                    {item.subcategory}
                   </div>
                 </div>
               ))}

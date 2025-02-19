@@ -405,25 +405,34 @@ function MainLayout({ children }: LayoutProps) {
         },
       ],
     },
-    acts: {
-      title: "Acts of Parliament",
-      subcategories: ["Acts of Parliament"],
+    legislation: {
+      title: "Legislation",
+      subcategories: ["Acts of Parliament", "Statutory Instruments"],
     },
-    statutory: {
-      title: "Statutory Instruments",
-      subcategories: [
-        "Statutory Instruments 2003",
-        "Statutory Instruments 2002",
-        "Statutory Instruments 2001",
-      ],
+
+    archival: {
+      title: "Archival Materials",
+      subcategories: ["Archival Materials"],
     },
+    // statutory: {
+    //   title: "Statutory Instruments",
+    //   subcategories: [
+    //     "Statutory Instruments 2003",
+    //     "Statutory Instruments 2002",
+    //     "Statutory Instruments 2001",
+    //   ],
+    // },
     others: {
       title: "Others",
       subcategories: [
-        { name: "About", href: "/about" },
+        { name: "About Educite", href: "/about" },
         // { name: "Partners", href: "/partners" },
-        { name: "Open Access Resources", href: "/open-access-resources" },
-        { name: "Archival Materials", href: "/archival-materials" },
+        {
+          name: "Open Access Resources",
+          href: "https://openaccess.educitevl.edu.ug",
+          target: "_",
+        },
+        { name: "Educite Reports", href: "/educite_reports" },
         // { name: "Educite Archives", href: "/educite-archives" },
         // { name: "Educite Reports", href: "/educite-reports" },
       ],
@@ -462,7 +471,13 @@ function MainLayout({ children }: LayoutProps) {
                       <BookOpen className="mr-2 h-5 w-5" />
                     )}
                     {key === "courts" && <Gavel className="mr-2 h-5 w-5" />}
+                    {key === "legislation" && (
+                      <Gavel className="mr-2 h-5 w-5" />
+                    )}
                     {key === "acts" && <FileText className="mr-2 h-5 w-5" />}
+                    {key === "archival" && (
+                      <FileSpreadsheet className="mr-2 h-5 w-5" />
+                    )}
                     {key === "statutory" && (
                       <FileSpreadsheet className="mr-2 h-5 w-5" />
                     )}
@@ -564,6 +579,11 @@ function MainLayout({ children }: LayoutProps) {
                                 <Link
                                   key={subcategory.name}
                                   to={subcategory.href}
+                                  target={
+                                    subcategory.name == "Open Access Resources"
+                                      ? "_blank"
+                                      : "_self"
+                                  }
                                   className="text-gray-700 hover:text-blue-600 hover:bg-blue-100/50 px-3 py-2 rounded-lg transition-all duration-200 text-sm"
                                 >
                                   {subcategory.name}
@@ -820,6 +840,16 @@ function MainLayout({ children }: LayoutProps) {
                     className="text-gray-400 hover:text-white transition-colors duration-200"
                   >
                     Contact
+                  </Link>
+                </li>
+
+                <li>
+                  <Link
+                    to="https://openaccess.educitevl.edu.ug"
+                    target="_"
+                    className="text-gray-400 hover:text-white transition-colors duration-200"
+                  >
+                    Open Access Resources
                   </Link>
                 </li>
               </ul>

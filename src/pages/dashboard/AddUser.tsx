@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { 
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
   User,
   Mail,
   Lock,
@@ -8,18 +8,19 @@ import {
   CreditCard,
   AlertCircle,
   CheckCircle,
-  ArrowLeft
-} from 'lucide-react';
-import { Button } from '../../components/ui/Button';
+  ArrowLeft,
+} from "lucide-react";
+import { Button } from "../../components/ui/Button";
+import { createUser, signUpUser } from "../../lib/users";
 
 interface FormData {
   name: string;
   email: string;
   password: string;
   confirmPassword: string;
-  role: 'admin' | 'subscriber' | 'guest';
-  status: 'active' | 'inactive';
-  subscriptionTier: 'bronze' | 'silver' | 'gold' | 'platinum' | null;
+  role: "admin" | "subscriber" | "guest";
+  status: "active" | "inactive";
+  subscriptionTier: "bronze" | "silver" | "gold" | "platinum" | null;
 }
 
 export default function AddUser() {
@@ -28,13 +29,13 @@ export default function AddUser() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [formData, setFormData] = useState<FormData>({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    role: 'guest',
-    status: 'active',
-    subscriptionTier: null
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    role: "guest",
+    status: "active",
+    subscriptionTier: null,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -45,32 +46,45 @@ export default function AddUser() {
     try {
       // Validation
       if (formData.password !== formData.confirmPassword) {
-        throw new Error('Passwords do not match');
+        throw new Error("Passwords do not match");
       }
 
       if (formData.password.length < 8) {
-        throw new Error('Password must be at least 8 characters long');
+        throw new Error("Password must be at least 8 characters long");
       }
 
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      // console.log("form data", formData);
+
+      // first, we need to create an account with supabase auth
+      const data = await signUpUser(formData.email, formData.password);
+
+      // after, we create our own user record
+      if (data.user?.id) {
+        const data2 = await createUser(data.user?.id, formData);
+
+        console.log("created user", data2);
+      }
+
+      console.log("data", data);
+
+      setLoading(false);
+
       setSuccess(true);
-      setTimeout(() => {
-        navigate('/dashboard/users');
-      }, 2000);
+      navigate("/dashboard/users");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create user');
+      setError(err instanceof Error ? err.message : "Failed to create user");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -81,13 +95,15 @@ export default function AddUser() {
         <div>
           <Button
             variant="ghost"
-            onClick={() => navigate('/dashboard/users')}
+            onClick={() => navigate("/dashboard/users")}
             className="flex items-center text-gray-600 hover:text-gray-900"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Users
           </Button>
-          <h1 className="mt-2 text-2xl font-bold text-gray-900">Add New User</h1>
+          <h1 className="mt-2 text-2xl font-bold text-gray-900">
+            Add New User
+          </h1>
           <p className="mt-1 text-sm text-gray-500">
             Create a new user account with specific roles and permissions
           </p>
@@ -176,9 +192,7 @@ export default function AddUser() {
                   minLength={8}
                 />
               </div>
-              <p className="mt-1 text-xs text-gray-500">
-                Minimum 8 characters
-              </p>
+              <p className="mt-1 text-xs text-gray-500">Minimum 8 characters</p>
             </div>
 
             {/* Confirm Password */}
@@ -258,7 +272,7 @@ export default function AddUser() {
                 </div>
                 <select
                   name="subscriptionTier"
-                  value={formData.subscriptionTier || ''}
+                  value={formData.subscriptionTier || ""}
                   onChange={handleChange}
                   className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                 >
@@ -276,7 +290,7 @@ export default function AddUser() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => navigate('/dashboard/users')}
+              onClick={() => navigate("/dashboard/users")}
             >
               Cancel
             </Button>
@@ -286,7 +300,7 @@ export default function AddUser() {
               disabled={loading}
               className="min-w-[100px]"
             >
-              {loading ? 'Creating...' : 'Create User'}
+              {loading ? "Creating..." : "Create User"}
             </Button>
           </div>
         </form>

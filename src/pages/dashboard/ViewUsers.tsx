@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { 
+import { useState, useEffect } from "react";
+import {
   User,
   Search,
   Filter,
@@ -19,31 +19,36 @@ import {
   Users,
   CreditCard,
   TrendingUp,
-  AlertCircle
-} from 'lucide-react';
-import { Button } from '../../components/ui/Button';
-import { fetchUsers, updateUser, deleteUser, getUserStats } from '../../lib/users';
-import { exportData, formatDate } from '../../lib/utils';
-import type { User as UserType } from '../../lib/users';
+  AlertCircle,
+} from "lucide-react";
+import { Button } from "../../components/ui/Button";
+import {
+  fetchUsers,
+  updateUser,
+  deleteUser,
+  getUserStats,
+} from "../../lib/users";
+import { exportData, formatDate } from "../../lib/utils";
+import type { User as UserType } from "../../lib/users";
 
 export default function ViewUsers() {
   const [users, setUsers] = useState<UserType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedRole, setSelectedRole] = useState<string>('all');
-  const [selectedStatus, setSelectedStatus] = useState<string>('all');
-  const [selectedTier, setSelectedTier] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedRole, setSelectedRole] = useState<string>("all");
+  const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [selectedTier, setSelectedTier] = useState<string>("all");
   const [showFilters, setShowFilters] = useState(false);
-  const [sortField, setSortField] = useState<string>('name');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [sortField, setSortField] = useState<string>("name");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [showActions, setShowActions] = useState(false);
   const [stats, setStats] = useState({
     totalUsers: 0,
     activeUsers: 0,
     subscribedUsers: 0,
-    conversionRate: 0
+    conversionRate: 0,
   });
 
   useEffect(() => {
@@ -55,13 +60,13 @@ export default function ViewUsers() {
     try {
       const [userData, statsData] = await Promise.all([
         fetchUsers(),
-        getUserStats()
+        getUserStats(),
       ]);
       setUsers(userData);
       setStats(statsData);
     } catch (err) {
-      console.error('Error loading users:', err);
-      setError('Failed to load users');
+      console.error("Error loading users:", err);
+      setError("Failed to load users");
     } finally {
       setLoading(false);
     }
@@ -69,35 +74,39 @@ export default function ViewUsers() {
 
   const handleSort = (field: string) => {
     if (field === sortField) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
   };
 
   const handleSelectAll = (checked: boolean) => {
-    setSelectedUsers(checked ? filteredUsers.map(user => user.id) : []);
+    setSelectedUsers(checked ? filteredUsers.map((user) => user.id) : []);
   };
 
   const handleSelectUser = (userId: string, checked: boolean) => {
-    setSelectedUsers(prev => 
-      checked ? [...prev, userId] : prev.filter(id => id !== userId)
+    setSelectedUsers((prev) =>
+      checked ? [...prev, userId] : prev.filter((id) => id !== userId)
     );
   };
 
-  const handleBulkAction = async (action: 'delete' | 'activate' | 'deactivate') => {
-    if (!window.confirm(`Are you sure you want to ${action} the selected users?`)) {
+  const handleBulkAction = async (
+    action: "delete" | "activate" | "deactivate"
+  ) => {
+    if (
+      !window.confirm(`Are you sure you want to ${action} the selected users?`)
+    ) {
       return;
     }
 
     try {
       for (const userId of selectedUsers) {
-        if (action === 'delete') {
+        if (action === "delete") {
           await deleteUser(userId);
         } else {
           await updateUser(userId, {
-            status: action === 'activate' ? 'active' : 'inactive'
+            status: action === "activate" ? "active" : "inactive",
           });
         }
       }
@@ -110,48 +119,57 @@ export default function ViewUsers() {
     }
   };
 
-  const handleExport = async (format: 'csv' | 'excel' | 'pdf') => {
-    const usersToExport = selectedUsers.length > 0
-      ? users.filter(u => selectedUsers.includes(u.id))
-      : users;
+  const handleExport = async (format: "csv" | "excel" | "pdf") => {
+    const usersToExport =
+      selectedUsers.length > 0
+        ? users.filter((u) => selectedUsers.includes(u.id))
+        : users;
 
-    const exportData = usersToExport.map(user => ({
+    const exportData = usersToExport.map((user) => ({
       Name: user.name,
       Email: user.email,
       Role: user.role,
       Status: user.status,
-      'Subscription Tier': user.subscriptionTier || 'None',
-      'Last Login': formatDate(user.lastLogin),
-      'Created At': formatDate(user.createdAt)
+      "Subscription Tier": user.subscriptionTier || "None",
+      "Last Login": formatDate(user.lastLogin),
+      "Created At": formatDate(user.createdAt),
     }));
 
     try {
-      await exportData(exportData, format, 'users');
+      await exportData(exportData, format, "users");
     } catch (err) {
-      console.error('Error exporting data:', err);
-      setError('Failed to export data');
+      console.error("Error exporting data:", err);
+      setError("Failed to export data");
     }
   };
 
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = 
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesRole = selectedRole === 'all' || user.role === selectedRole;
-    const matchesStatus = selectedStatus === 'all' || user.status === selectedStatus;
-    const matchesTier = selectedTier === 'all' || user.subscriptionTier === selectedTier;
+  const filteredUsers = users
+    .filter((user) => {
+      const matchesSearch =
+        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase());
 
-    return matchesSearch && matchesRole && matchesStatus && matchesTier;
-  }).sort((a, b) => {
-    const direction = sortDirection === 'asc' ? 1 : -1;
-    if (sortField === 'name') return a.name.localeCompare(b.name) * direction;
-    if (sortField === 'email') return a.email.localeCompare(b.email) * direction;
-    if (sortField === 'lastLogin') {
-      return (new Date(a.lastLogin).getTime() - new Date(b.lastLogin).getTime()) * direction;
-    }
-    return 0;
-  });
+      const matchesRole = selectedRole === "all" || user.role === selectedRole;
+      const matchesStatus =
+        selectedStatus === "all" || user.status === selectedStatus;
+      const matchesTier =
+        selectedTier === "all" || user.subscriptionTier === selectedTier;
+
+      return matchesSearch && matchesRole && matchesStatus && matchesTier;
+    })
+    .sort((a, b) => {
+      const direction = sortDirection === "asc" ? 1 : -1;
+      if (sortField === "name") return a.name.localeCompare(b.name) * direction;
+      if (sortField === "email")
+        return a.email.localeCompare(b.email) * direction;
+      if (sortField === "lastLogin") {
+        return (
+          (new Date(a.lastLogin).getTime() - new Date(b.lastLogin).getTime()) *
+          direction
+        );
+      }
+      return 0;
+    });
 
   return (
     <div className="space-y-6">
@@ -166,7 +184,7 @@ export default function ViewUsers() {
         <div className="flex items-center gap-4">
           <Button
             variant="outline"
-            onClick={() => window.location.href = '/dashboard/users/add'}
+            onClick={() => (window.location.href = "/dashboard/users/add")}
             className="flex items-center"
           >
             <UserPlus className="mr-2 h-4 w-4" />
@@ -313,21 +331,21 @@ export default function ViewUsers() {
                 {showActions && (
                   <div className="absolute right-0 mt-2 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 z-10">
                     <button
-                      onClick={() => handleBulkAction('delete')}
+                      onClick={() => handleBulkAction("delete")}
                       className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
                       <Trash2 className="mr-3 h-4 w-4 text-gray-400" />
                       Delete Selected
                     </button>
                     <button
-                      onClick={() => handleBulkAction('activate')}
+                      onClick={() => handleBulkAction("activate")}
                       className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
                       <CheckCircle className="mr-3 h-4 w-4 text-gray-400" />
                       Activate Selected
                     </button>
                     <button
-                      onClick={() => handleBulkAction('deactivate')}
+                      onClick={() => handleBulkAction("deactivate")}
                       className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
                       <XCircle className="mr-3 h-4 w-4 text-gray-400" />
@@ -338,7 +356,7 @@ export default function ViewUsers() {
               </div>
               <Button
                 variant="outline"
-                onClick={() => handleExport('csv')}
+                onClick={() => handleExport("csv")}
                 className="flex items-center"
               >
                 <Download className="mr-2 h-4 w-4" />
@@ -361,15 +379,15 @@ export default function ViewUsers() {
                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                 </th>
-                <th 
+                <th
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort('name')}
+                  onClick={() => handleSort("name")}
                 >
                   User
                 </th>
-                <th 
+                <th
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort('email')}
+                  onClick={() => handleSort("email")}
                 >
                   Email
                 </th>
@@ -382,9 +400,9 @@ export default function ViewUsers() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Subscription
                 </th>
-                <th 
+                <th
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort('lastLogin')}
+                  onClick={() => handleSort("lastLogin")}
                 >
                   Last Login
                 </th>
@@ -400,7 +418,9 @@ export default function ViewUsers() {
                     <input
                       type="checkbox"
                       checked={selectedUsers.includes(user.id)}
-                      onChange={(e) => handleSelectUser(user.id, e.target.checked)}
+                      onChange={(e) =>
+                        handleSelectUser(user.id, e.target.checked)
+                      }
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                   </td>
@@ -412,8 +432,12 @@ export default function ViewUsers() {
                         </div>
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                        <div className="text-sm text-gray-500">ID: {user.id}</div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {user.name}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          ID: {user.id}
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -421,36 +445,74 @@ export default function ViewUsers() {
                     <div className="text-sm text-gray-900">{user.email}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`
+                    <span
+                      className={`
                       inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                      ${user.role === 'admin' ? 'bg-purple-100 text-purple-800' : ''}
-                      ${user.role === 'subscriber' ? 'bg-blue-100 text-blue-800' : ''}
-                      ${user.role === 'guest' ? 'bg-gray-100 text-gray-800' : ''}
-                    `}>
+                      ${
+                        user.role === "admin"
+                          ? "bg-purple-100 text-purple-800"
+                          : ""
+                      }
+                      ${
+                        user.role === "subscriber"
+                          ? "bg-blue-100 text-blue-800"
+                          : ""
+                      }
+                      ${
+                        user.role === "guest" ? "bg-gray-100 text-gray-800" : ""
+                      }
+                    `}
+                    >
                       {user.role}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`
+                    <span
+                      className={`
                       inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                      ${user.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}
-                    `}>
+                      ${
+                        user.status === "active"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                      }
+                    `}
+                    >
                       {user.status}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {user.subscriptionTier ? (
-                      <span className={`
+                      <span
+                        className={`
                         inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                        ${user.subscriptionTier === 'bronze' ? 'bg-yellow-100 text-yellow-800' : ''}
-                        ${user.subscriptionTier === 'silver' ? 'bg-gray-100 text-gray-800' : ''}
-                        ${user.subscriptionTier === 'gold' ? 'bg-yellow-100 text-yellow-800' : ''}
-                        ${user.subscriptionTier === 'platinum' ? 'bg-purple-100 text-purple-800' : ''}
-                      `}>
+                        ${
+                          user.subscriptionTier === "bronze"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : ""
+                        }
+                        ${
+                          user.subscriptionTier === "silver"
+                            ? "bg-gray-100 text-gray-800"
+                            : ""
+                        }
+                        ${
+                          user.subscriptionTier === "gold"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : ""
+                        }
+                        ${
+                          user.subscriptionTier === "platinum"
+                            ? "bg-purple-100 text-purple-800"
+                            : ""
+                        }
+                      `}
+                      >
                         {user.subscriptionTier}
                       </span>
                     ) : (
-                      <span className="text-sm text-gray-500">No subscription</span>
+                      <span className="text-sm text-gray-500">
+                        No subscription
+                      </span>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -484,25 +546,27 @@ interface StatCardProps {
   value: string | number;
   trend: number;
   icon: React.ReactNode;
-  color: 'green' | 'blue' | 'purple' | 'yellow';
+  color: "green" | "blue" | "purple" | "yellow";
 }
 
 function StatCard({ title, value, trend, icon, color }: StatCardProps) {
   const colorClasses = {
-    green: 'bg-green-50 text-green-600',
-    blue: 'bg-blue-50 text-blue-600',
-    purple: 'bg-purple-50 text-purple-600',
-    yellow: 'bg-yellow-50 text-yellow-600'
+    green: "bg-green-50 text-green-600",
+    blue: "bg-blue-50 text-blue-600",
+    purple: "bg-purple-50 text-purple-600",
+    yellow: "bg-yellow-50 text-yellow-600",
   };
 
   return (
     <div className="rounded-lg bg-white p-6 shadow">
       <div className="flex items-center justify-between">
-        <div className={`rounded-lg ${colorClasses[color]} p-3`}>
-          {icon}
-        </div>
+        <div className={`rounded-lg ${colorClasses[color]} p-3`}>{icon}</div>
         {trend !== 0 && (
-          <div className={`flex items-center ${trend > 0 ? 'text-green-600' : 'text-red-600'}`}>
+          <div
+            className={`flex items-center ${
+              trend > 0 ? "text-green-600" : "text-red-600"
+            }`}
+          >
             {trend > 0 ? (
               <ArrowUpRight className="h-4 w-4" />
             ) : (
