@@ -69,7 +69,7 @@ export async function fetchUsers() {
       // name: user.email?.split("@")[0] || "Unknown User",
       name: user?.display_name || "Unknown User",
       email: user?.email || "unknown@example.com",
-      role: user.role,
+      role: user.user_role,
       status: user.status || "active",
       subscriptionTier: user.subscription_tier,
       lastLogin: user?.last_sign_in_at || user.created_at,

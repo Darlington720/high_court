@@ -407,7 +407,19 @@ function MainLayout({ children }: LayoutProps) {
     },
     legislation: {
       title: "Legislation",
-      subcategories: ["Acts of Parliament", "Statutory Instruments"],
+      // subcategories: ["Acts of Parliament", "Statutory Instruments"],
+      subcategories: [
+        {
+          name: "Acts of Parliament",
+          href: "/legislation",
+        },
+        {
+          name: "Statutory Instruments",
+          href: "/about",
+        },
+      ],
+
+      // subcategories: [{ name: "About Educite", href: "/about" }],
     },
 
     archival: {
@@ -422,6 +434,15 @@ function MainLayout({ children }: LayoutProps) {
     //     "Statutory Instruments 2001",
     //   ],
     // },
+    gazettes: {
+      title: "Gazettes",
+      subcategories: [
+        {
+          name: "Gazettes",
+          href: "/gazettes",
+        },
+      ],
+    },
     others: {
       title: "Others",
       subcategories: [
@@ -572,7 +593,9 @@ function MainLayout({ children }: LayoutProps) {
                                 )
                               )}
                             </div>
-                          ) : key === "others" ? (
+                          ) : key === "others" ||
+                            key === "legislation" ||
+                            key == "gazettes" ? (
                             // Others menu with links
                             <div className="col-span-10 grid grid-cols-3 gap-6">
                               {item.subcategories.map((subcategory) => (

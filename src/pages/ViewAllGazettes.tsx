@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { 
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
   FileSpreadsheet,
   Search,
   Filter,
@@ -16,26 +16,26 @@ import {
   ChevronLeft,
   Clock,
   Users,
-  FileText
-} from 'lucide-react';
-import { Button } from '../components/ui/Button';
-import { fetchDocuments } from '../lib/documents';
-import { formatDate } from '../lib/utils';
-import { PaymentModal } from '../components/PaymentModal';
-import type { Document } from '../types';
+  FileText,
+} from "lucide-react";
+import { Button } from "../components/ui/Button";
+import { fetchDocuments } from "../lib/documents";
+import { formatDate } from "../lib/utils";
+import { PaymentModal } from "../components/PaymentModal";
+import type { Document } from "../types";
 
 export default function ViewAllGazettes() {
   const navigate = useNavigate();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
-    type: '',
-    year: '',
-    noticeType: '',
-    status: ''
+    type: "",
+    year: "",
+    noticeType: "",
+    status: "",
   });
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
@@ -51,13 +51,13 @@ export default function ViewAllGazettes() {
     setError(null);
     try {
       const data = await fetchDocuments(
-        { category: 'Gazettes' },
-        { field: 'created_at', direction: 'desc' }
+        { category: "Gazettes" },
+        { field: "created_at", direction: "desc" }
       );
       setDocuments(data);
     } catch (err) {
-      setError('Failed to load gazettes. Please try again.');
-      console.error('Error loading gazettes:', err);
+      setError("Failed to load gazettes. Please try again.");
+      console.error("Error loading gazettes:", err);
     } finally {
       setLoading(false);
     }
@@ -66,24 +66,34 @@ export default function ViewAllGazettes() {
   const handleDownload = (doc: Document) => {
     setShowPaymentModal(true);
     setSelectedPlan({
-      name: 'Bronze',
+      name: "Bronze",
       price: 10,
-      duration: '1 Day',
-      features: ['Document Downloads', 'Basic Search', '24/7 Support']
+      duration: "1 Day",
+      features: ["Document Downloads", "Basic Search", "24/7 Support"],
     });
   };
 
-  const filteredDocuments = documents.filter(doc => {
-    const matchesSearch = 
+  const filteredDocuments = documents.filter((doc) => {
+    const matchesSearch =
       doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doc.metadata.keywords?.some(k => k.toLowerCase().includes(searchTerm.toLowerCase()));
+      doc.metadata.keywords?.some((k) =>
+        k.toLowerCase().includes(searchTerm.toLowerCase())
+      );
 
     const matchesType = !filters.type || doc.subcategory === filters.type;
     const matchesYear = !filters.year || doc.created_at.includes(filters.year);
-    const matchesNoticeType = !filters.noticeType || doc.metadata.noticeType === filters.noticeType;
-    const matchesStatus = !filters.status || doc.metadata.status === filters.status;
+    const matchesNoticeType =
+      !filters.noticeType || doc.metadata.noticeType === filters.noticeType;
+    const matchesStatus =
+      !filters.status || doc.metadata.status === filters.status;
 
-    return matchesSearch && matchesType && matchesYear && matchesNoticeType && matchesStatus;
+    return (
+      matchesSearch &&
+      matchesType &&
+      matchesYear &&
+      matchesNoticeType &&
+      matchesStatus
+    );
   });
 
   // Pagination
@@ -99,7 +109,9 @@ export default function ViewAllGazettes() {
         <div className="space-y-8">
           {/* Header */}
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Recent Gazettes</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Recent Gazettes
+            </h1>
             <p className="mt-2 text-lg text-gray-600">
               Browse and search through official gazettes and notices
             </p>
@@ -136,17 +148,30 @@ export default function ViewAllGazettes() {
                   <label className="block text-sm font-medium text-gray-700">
                     Type
                   </label>
-                  <select
+                  {/* <select
                     value={filters.type}
                     onChange={(e) => setFilters({ ...filters, type: e.target.value })}
                     className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   >
                     <option value="">All Types</option>
-                    <option value="General Notices">General Notices</option>
-                    <option value="Legal Notices">Legal Notices</option>
-                    <option value="Statutory Instruments">Statutory Instruments</option>
-                    <option value="Bills Supplements">Bills Supplements</option>
-                    <option value="Acts Supplements">Acts Supplements</option>
+                    
+                  </select> */}
+                  <select
+                    value={filters.type}
+                    onChange={(e) =>
+                      setFilters({ ...filters, type: e.target.value })
+                    }
+                    className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  >
+                    <option value="">All Types</option>
+                    {Array.from(
+                      { length: 2025 - 1900 + 1 },
+                      (_, i) => 2025 - i
+                    ).map((year) => (
+                      <option key={year} value={`Gazzetes ${year}`}>
+                        Gazzetes {year}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div>
@@ -155,12 +180,19 @@ export default function ViewAllGazettes() {
                   </label>
                   <select
                     value={filters.year}
-                    onChange={(e) => setFilters({ ...filters, year: e.target.value })}
+                    onChange={(e) =>
+                      setFilters({ ...filters, year: e.target.value })
+                    }
                     className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   >
                     <option value="">All Years</option>
-                    {Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i).map(year => (
-                      <option key={year} value={year}>{year}</option>
+                    {Array.from(
+                      { length: 10 },
+                      (_, i) => new Date().getFullYear() - i
+                    ).map((year) => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -170,7 +202,9 @@ export default function ViewAllGazettes() {
                   </label>
                   <select
                     value={filters.noticeType}
-                    onChange={(e) => setFilters({ ...filters, noticeType: e.target.value })}
+                    onChange={(e) =>
+                      setFilters({ ...filters, noticeType: e.target.value })
+                    }
                     className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   >
                     <option value="">All Notice Types</option>
@@ -259,7 +293,9 @@ export default function ViewAllGazettes() {
                   <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200">
                     <Button
                       variant="outline"
-                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      }
                       disabled={currentPage === 1}
                     >
                       <ChevronLeft className="mr-2 h-4 w-4" />
@@ -270,7 +306,9 @@ export default function ViewAllGazettes() {
                     </span>
                     <Button
                       variant="outline"
-                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                      }
                       disabled={currentPage === totalPages}
                     >
                       Next
@@ -289,7 +327,8 @@ export default function ViewAllGazettes() {
                         Get Full Access
                       </h3>
                       <p className="mt-2 text-blue-200">
-                        Subscribe to download gazettes and access premium features
+                        Subscribe to download gazettes and access premium
+                        features
                       </p>
                     </div>
                     <Button
