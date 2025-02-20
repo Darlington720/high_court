@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import {
   FileText,
@@ -19,12 +19,16 @@ import {
   Building2,
   Globe,
   Briefcase,
+  Download,
+  View,
 } from "lucide-react";
 import type { Document } from "../types";
 import { Button } from "../components/ui/Button";
 import { SearchResults } from "../components/SearchResults";
 import { PaymentModal } from "../components/PaymentModal";
 import { fetchDocuments } from "../lib/documents";
+import { FilePreview } from "../components/ui/FilePreview";
+import AppContext from "../context/AppContext";
 
 // Mock data for recent sections
 const recentData = {
@@ -193,6 +197,8 @@ export default function Home() {
   const [selectedPlan, setSelectedPlan] = useState<
     (typeof subscriptionPlans)[0] | null
   >(null);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const appContext = useContext(AppContext);
 
   const handleSearch = async () => {
     // TODO: Implement actual search when Supabase is connected
@@ -222,8 +228,45 @@ export default function Home() {
     setShowPaymentModal(true);
   };
 
+  const handlePreview = (fileUrl: string) => {
+    window.open(fileUrl, "_blank");
+  };
+
+  const [downloadingFiles, setDownloadingFiles] = useState({});
+
+  const handleDownload = async (fileUrl, fileName, fileId) => {
+    try {
+      // Set loading state for this specific file
+      setDownloadingFiles((prev) => ({ ...prev, [fileId]: true }));
+
+      const response = await fetch(fileUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/octet-stream",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch file: ${response.statusText}`);
+      }
+
+      const blob = await response.blob();
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = fileName || "document.pdf";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+    } catch (error) {
+      console.error("Download error:", error);
+    } finally {
+      // Reset loading state for this file
+      setDownloadingFiles((prev) => ({ ...prev, [fileId]: false }));
+    }
+  };
+
   const loadDocuments = async () => {
-    console.log("loading judgements...");
     setLoading(true);
     setError(null);
     try {
@@ -232,6 +275,8 @@ export default function Home() {
         { field: "created_at", direction: "desc" },
         3
       );
+
+      // console.log("data", data);
 
       const legislationData = await fetchDocuments(
         { category: "Acts of Parliament" },
@@ -452,12 +497,36 @@ export default function Home() {
                   <h3 className="text-sm font-medium text-gray-900">
                     {item.title}
                   </h3>
+
                   <div className="mt-1 flex items-center text-sm text-gray-500">
                     <Calendar className="mr-1.5 h-4 w-4" />
-                    {new Date(item.created_at).toLocaleDateString()}
+                    <span>
+                      {new Date(item.created_at).toLocaleDateString()}
+                    </span>
                     <span className="mx-2">•</span>
-                    {item.subcategory}
+                    <span>{item.subcategory}</span>
                   </div>
+
+                  {appContext?.user && (
+                    <div className="flex space-x-4 mt-2">
+                      <span
+                        className="text-xs text-blue-600 cursor-pointer hover:underline"
+                        onClick={() => handlePreview(item.file_url)}
+                      >
+                        Preview
+                      </span>
+                      <span
+                        className="text-xs text-blue-600 cursor-pointer hover:underline"
+                        onClick={() =>
+                          handleDownload(item.file_url, item.title, item.id)
+                        }
+                      >
+                        {downloadingFiles[item.id]
+                          ? "Downloading..."
+                          : "Download"}
+                      </span>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -494,6 +563,26 @@ export default function Home() {
                     <span className="mx-2">•</span>
                     {item.subcategory}
                   </div>
+                  {appContext?.user && (
+                    <div className="flex space-x-4 mt-2">
+                      <span
+                        className="text-xs text-blue-600 cursor-pointer hover:underline"
+                        onClick={() => handlePreview(item.file_url)}
+                      >
+                        Preview
+                      </span>
+                      <span
+                        className="text-xs text-blue-600 cursor-pointer hover:underline"
+                        onClick={() =>
+                          handleDownload(item.file_url, item.title, item.id)
+                        }
+                      >
+                        {downloadingFiles[item.id]
+                          ? "Downloading..."
+                          : "Download"}
+                      </span>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -530,6 +619,26 @@ export default function Home() {
                     <span className="mx-2">•</span>
                     {item.subcategory} Session
                   </div>
+                  {appContext?.user && (
+                    <div className="flex space-x-4 mt-2">
+                      <span
+                        className="text-xs text-blue-600 cursor-pointer hover:underline"
+                        onClick={() => handlePreview(item.file_url)}
+                      >
+                        Preview
+                      </span>
+                      <span
+                        className="text-xs text-blue-600 cursor-pointer hover:underline"
+                        onClick={() =>
+                          handleDownload(item.file_url, item.title, item.id)
+                        }
+                      >
+                        {downloadingFiles[item.id]
+                          ? "Downloading..."
+                          : "Download"}
+                      </span>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -566,6 +675,26 @@ export default function Home() {
                     <span className="mx-2">•</span>
                     {item.subcategory}
                   </div>
+                  {appContext?.user && (
+                    <div className="flex space-x-4 mt-2">
+                      <span
+                        className="text-xs text-blue-600 cursor-pointer hover:underline"
+                        onClick={() => handlePreview(item.file_url)}
+                      >
+                        Preview
+                      </span>
+                      <span
+                        className="text-xs text-blue-600 cursor-pointer hover:underline"
+                        onClick={() =>
+                          handleDownload(item.file_url, item.title, item.id)
+                        }
+                      >
+                        {downloadingFiles[item.id]
+                          ? "Downloading..."
+                          : "Download"}
+                      </span>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

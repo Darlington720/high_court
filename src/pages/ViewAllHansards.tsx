@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { 
+import { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import {
   BookOpen,
   Search,
   Filter,
@@ -15,30 +15,71 @@ import {
   ChevronRight,
   ChevronLeft,
   Clock,
-  Users
-} from 'lucide-react';
-import { Button } from '../components/ui/Button';
-import { fetchDocuments } from '../lib/documents';
-import { formatDate } from '../lib/utils';
-import { PaymentModal } from '../components/PaymentModal';
-import type { Document } from '../types';
+  Users,
+  Loader,
+} from "lucide-react";
+import { Button } from "../components/ui/Button";
+import { fetchDocuments } from "../lib/documents";
+import { formatDate } from "../lib/utils";
+import { PaymentModal } from "../components/PaymentModal";
+import type { Document } from "../types";
+import AppContext from "../context/AppContext";
 
 export default function ViewAllHansards() {
   const navigate = useNavigate();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
-    year: '',
-    session: '',
-    status: ''
+    year: "",
+    session: "",
+    status: "",
   });
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  const appContext = useContext(AppContext);
+  const [downloadingFiles, setDownloadingFiles] = useState({});
+
+  const handlePreview = (fileUrl: string) => {
+    window.open(fileUrl, "_blank");
+  };
+
+  const handleDownload = async (fileUrl, fileName, fileId) => {
+    try {
+      // Set loading state for this specific file
+      setDownloadingFiles((prev) => ({ ...prev, [fileId]: true }));
+
+      const response = await fetch(fileUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/octet-stream",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch file: ${response.statusText}`);
+      }
+
+      const blob = await response.blob();
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = fileName || "document.pdf";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+    } catch (error) {
+      console.error("Download error:", error);
+    } finally {
+      // Reset loading state for this file
+      setDownloadingFiles((prev) => ({ ...prev, [fileId]: false }));
+    }
+  };
 
   useEffect(() => {
     loadDocuments();
@@ -49,36 +90,40 @@ export default function ViewAllHansards() {
     setError(null);
     try {
       const data = await fetchDocuments(
-        { category: 'Hansards' },
-        { field: 'created_at', direction: 'desc' }
+        { category: "Hansards" },
+        { field: "created_at", direction: "desc" }
       );
       setDocuments(data);
     } catch (err) {
-      setError('Failed to load hansards. Please try again.');
-      console.error('Error loading hansards:', err);
+      setError("Failed to load hansards. Please try again.");
+      console.error("Error loading hansards:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDownload = (doc: Document) => {
+  const _handleDownload = (doc: Document) => {
     setShowPaymentModal(true);
     setSelectedPlan({
-      name: 'Bronze',
+      name: "Bronze",
       price: 10,
-      duration: '1 Day',
-      features: ['Document Downloads', 'Basic Search', '24/7 Support']
+      duration: "1 Day",
+      features: ["Document Downloads", "Basic Search", "24/7 Support"],
     });
   };
 
-  const filteredDocuments = documents.filter(doc => {
-    const matchesSearch = 
+  const filteredDocuments = documents.filter((doc) => {
+    const matchesSearch =
       doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doc.metadata.keywords?.some(k => k.toLowerCase().includes(searchTerm.toLowerCase()));
+      doc.metadata.keywords?.some((k) =>
+        k.toLowerCase().includes(searchTerm.toLowerCase())
+      );
 
     const matchesYear = !filters.year || doc.subcategory.includes(filters.year);
-    const matchesSession = !filters.session || doc.metadata.session === filters.session;
-    const matchesStatus = !filters.status || doc.metadata.status === filters.status;
+    const matchesSession =
+      !filters.session || doc.metadata.session === filters.session;
+    const matchesStatus =
+      !filters.status || doc.metadata.status === filters.status;
 
     return matchesSearch && matchesYear && matchesSession && matchesStatus;
   });
@@ -96,7 +141,9 @@ export default function ViewAllHansards() {
         <div className="space-y-8">
           {/* Header */}
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Recent Hansards</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Recent Hansards
+            </h1>
             <p className="mt-2 text-lg text-gray-600">
               Browse and search through parliamentary hansards and debates
             </p>
@@ -135,12 +182,19 @@ export default function ViewAllHansards() {
                   </label>
                   <select
                     value={filters.year}
-                    onChange={(e) => setFilters({ ...filters, year: e.target.value })}
+                    onChange={(e) =>
+                      setFilters({ ...filters, year: e.target.value })
+                    }
                     className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   >
                     <option value="">All Years</option>
-                    {Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i).map(year => (
-                      <option key={year} value={year}>{year}</option>
+                    {Array.from(
+                      { length: 10 },
+                      (_, i) => new Date().getFullYear() - i
+                    ).map((year) => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -150,7 +204,9 @@ export default function ViewAllHansards() {
                   </label>
                   <select
                     value={filters.session}
-                    onChange={(e) => setFilters({ ...filters, session: e.target.value })}
+                    onChange={(e) =>
+                      setFilters({ ...filters, session: e.target.value })
+                    }
                     className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   >
                     <option value="">All Sessions</option>
@@ -165,7 +221,9 @@ export default function ViewAllHansards() {
                   </label>
                   <select
                     value={filters.status}
-                    onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                    onChange={(e) =>
+                      setFilters({ ...filters, status: e.target.value })
+                    }
                     className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   >
                     <option value="">All Statuses</option>
@@ -234,16 +292,43 @@ export default function ViewAllHansards() {
                           </div>
                         </div>
                         <div className="ml-4 flex items-center space-x-2">
-                          <Button variant="ghost" size="sm">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button
+                          {appContext?.user && (
+                            <>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handlePreview(doc.file_url)}
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                              {/* <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => handleDownload(doc)}
                           >
                             <Lock className="h-4 w-4" />
-                          </Button>
+                          </Button> */}
+
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                disabled={downloadingFiles[doc.id]}
+                                onClick={() =>
+                                  handleDownload(
+                                    doc.file_url,
+                                    doc.title,
+                                    doc.id
+                                  )
+                                }
+                              >
+                                {downloadingFiles[doc.id] ? (
+                                  <Loader className="mr-0 h-5 w-5 animate-spin" />
+                                ) : (
+                                  <Download className="h-4 w-4" />
+                                )}
+                              </Button>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -255,7 +340,9 @@ export default function ViewAllHansards() {
                   <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200">
                     <Button
                       variant="outline"
-                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      }
                       disabled={currentPage === 1}
                     >
                       <ChevronLeft className="mr-2 h-4 w-4" />
@@ -266,7 +353,9 @@ export default function ViewAllHansards() {
                     </span>
                     <Button
                       variant="outline"
-                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                      }
                       disabled={currentPage === totalPages}
                     >
                       Next
@@ -285,7 +374,8 @@ export default function ViewAllHansards() {
                         Get Full Access
                       </h3>
                       <p className="mt-2 text-blue-200">
-                        Subscribe to download hansards and access premium features
+                        Subscribe to download hansards and access premium
+                        features
                       </p>
                     </div>
                     <Button

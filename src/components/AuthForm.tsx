@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock, Loader, AlertTriangle } from "lucide-react";
 import { Button } from "./ui/Button";
 import { signIn, signUp } from "../lib/auth";
+import AppContext from "../context/AppContext";
+import { supabase } from "../lib/supabase";
 
 interface AuthFormProps {
   mode: "login" | "register";
@@ -15,6 +17,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const appContext = useContext(AppContext);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +30,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
         throw new Error("Please enter both email and password");
       }
 
-      const { error } =
+      const { data, error } =
         mode === "login"
           ? await signIn(email, password)
           : await signUp(email, password);
@@ -37,7 +40,23 @@ export default function AuthForm({ mode }: AuthFormProps) {
       }
 
       if (mode === "login") {
-        navigate("/dashboard");
+        const { data: _data, error } = await supabase
+          .from("_users")
+          .select()
+          .eq("id", data?.user?.id);
+
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        const user = { ...data?.user, ..._data[0] };
+        appContext?.setUser(user);
+
+        if (user.user_role == "admin") {
+          navigate("/dashboard");
+        } else {
+          navigate("/");
+        }
       } else {
         setSuccess("Account created successfully! Redirecting...");
         setTimeout(() => navigate("/login"), 2000);

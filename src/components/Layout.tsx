@@ -1,5 +1,5 @@
-import { ReactNode, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { ReactNode, useContext, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Home,
   FileText,
@@ -47,9 +47,13 @@ import {
   Scroll,
   FileArchive,
   FileBarChart,
+  LogIn,
+  List,
 } from "lucide-react";
 import { Button } from "./ui/Button";
 import EduciteLogo from "../../assets/imgs/educite-logo.png";
+import AppContext from "../context/AppContext";
+import { supabase } from "../lib/supabase";
 
 interface LayoutProps {
   children: ReactNode;
@@ -367,6 +371,9 @@ function DashboardLayout({ children }: LayoutProps) {
 function MainLayout({ children }: LayoutProps) {
   const [megaMenuOpen, setMegaMenuOpen] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showActions, setShowActions] = useState(false);
+  const appContext = useContext(AppContext);
+  const navigate = useNavigate();
 
   // Generate Hansards years and split into columns
   const generateHansardYears = () => {
@@ -458,6 +465,16 @@ function MainLayout({ children }: LayoutProps) {
         // { name: "Educite Reports", href: "/educite-reports" },
       ],
     },
+  };
+
+  const handleLogOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.log(error.message);
+    } else {
+      appContext?.setUser(null);
+    }
+    setShowActions(false);
   };
 
   return (
@@ -647,16 +664,78 @@ function MainLayout({ children }: LayoutProps) {
                     Dashboard
                   </Button>
                 </Link> */}
-                <Link to="/login">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="flex items-center bg-white text-blue-600 hover:bg-gray-50"
-                  >
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Sign In
-                  </Button>
-                </Link>
+                {appContext?.user ? (
+                  <>
+                    <Button
+                      variant="ghost"
+                      onClick={() => setShowActions(!showActions)}
+                      // className="flex items-center"
+                    >
+                      <div>
+                        <span
+                          className={`
+                        inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                      `}
+                        >
+                          {appContext?.user.display_name}
+                        </span>
+                        <div>
+                          <span
+                            className={`
+                      inline-flex items-center px-2.5 py-0.5 mx-2 rounded-full text-xs font-medium
+                      bg-purple-100 text-purple-800
+                    `}
+                          >
+                            {appContext?.user.user_role.toUpperCase()}
+                          </span>
+                          {appContext?.user.subscription_tier && (
+                            <>
+                              .
+                              <span
+                                className={`
+                        inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                      `}
+                              >
+                                {appContext?.user.subscription_tier?.toUpperCase()}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </Button>
+                    {showActions && (
+                      <div className="absolute right-40 mt-28 w-30 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 z-20">
+                        {appContext?.user.user_role == "admin" && (
+                          <button
+                            onClick={() => navigate("/dashboard")}
+                            className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          >
+                            <List className="mr-3 h-4 w-4 text-gray-400" />
+                            Dashboard
+                          </button>
+                        )}
+                        <button
+                          onClick={handleLogOut}
+                          className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          <LogOut className="mr-3 h-4 w-4 text-gray-400" />
+                          Sign Out
+                        </button>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <Link to="/login">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="flex items-center bg-white text-blue-600 hover:bg-gray-50"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Sign In
+                    </Button>
+                  </Link>
+                )}
               </div>
             </div>
 
@@ -777,20 +856,34 @@ function MainLayout({ children }: LayoutProps) {
               ))}
 
               <div className="pt-4 space-y-2">
-                {/* <Link
-                  to="/dashboard"
-                  className="block text-white hover:text-gray-100 py-2 px-3 rounded-md hover:bg-gray-800 transition-all duration-200"
-                >
-                  <LayoutDashboard className="inline-block mr-2 h-5 w-5" />
-                  Dashboard
-                </Link> */}
-                <Link
-                  to="/login"
-                  className="block text-white hover:text-gray-100 py-2 px-3 rounded-md hover:bg-gray-800 transition-all duration-200"
-                >
-                  <LogOut className="inline-block mr-2 h-5 w-5" />
-                  Sign In
-                </Link>
+                {appContext?.user ? (
+                  <>
+                    {appContext?.user.user_role == "admin" && (
+                      <Link
+                        to="/dashboard"
+                        className="block text-white hover:text-gray-100 py-2 px-3 rounded-md hover:bg-gray-800 transition-all duration-200"
+                      >
+                        <LayoutDashboard className="inline-block mr-2 h-5 w-5" />
+                        Dashboard
+                      </Link>
+                    )}
+                    <Link
+                      to="/login"
+                      className="block text-white hover:text-gray-100 py-2 px-3 rounded-md hover:bg-gray-800 transition-all duration-200"
+                    >
+                      <LogOut className="inline-block mr-2 h-5 w-5" />
+                      Sign Out
+                    </Link>
+                  </>
+                ) : (
+                  <Link
+                    to="/login"
+                    className="block text-white hover:text-gray-100 py-2 px-3 rounded-md hover:bg-gray-800 transition-all duration-200"
+                  >
+                    <LogIn className="inline-block mr-2 h-5 w-5" />
+                    Sign In
+                  </Link>
+                )}
               </div>
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Scroll,
@@ -15,12 +15,14 @@ import {
   ChevronRight,
   ChevronLeft,
   FileText,
+  Loader,
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { fetchDocuments } from "../lib/documents";
 import { formatDate } from "../lib/utils";
 import { PaymentModal } from "../components/PaymentModal";
 import type { Document } from "../types";
+import AppContext from "../context/AppContext";
 
 export default function ViewAllLegislation() {
   const navigate = useNavigate();
@@ -38,6 +40,45 @@ export default function ViewAllLegislation() {
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  const appContext = useContext(AppContext);
+  const [downloadingFiles, setDownloadingFiles] = useState({});
+
+  const handlePreview = (fileUrl: string) => {
+    window.open(fileUrl, "_blank");
+  };
+
+  const handleDownload = async (fileUrl, fileName, fileId) => {
+    try {
+      // Set loading state for this specific file
+      setDownloadingFiles((prev) => ({ ...prev, [fileId]: true }));
+
+      const response = await fetch(fileUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/octet-stream",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch file: ${response.statusText}`);
+      }
+
+      const blob = await response.blob();
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = fileName || "document.pdf";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+    } catch (error) {
+      console.error("Download error:", error);
+    } finally {
+      // Reset loading state for this file
+      setDownloadingFiles((prev) => ({ ...prev, [fileId]: false }));
+    }
+  };
 
   useEffect(() => {
     loadDocuments();
@@ -60,7 +101,7 @@ export default function ViewAllLegislation() {
     }
   };
 
-  const handleDownload = (doc: Document) => {
+  const _handleDownload = (doc: Document) => {
     setShowPaymentModal(true);
     setSelectedPlan({
       name: "Bronze",
@@ -248,16 +289,43 @@ export default function ViewAllLegislation() {
                           </div>
                         </div>
                         <div className="ml-4 flex items-center space-x-2">
-                          <Button variant="ghost" size="sm">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button
+                          {appContext?.user && (
+                            <>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handlePreview(doc.file_url)}
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                              {/* <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => handleDownload(doc)}
                           >
                             <Lock className="h-4 w-4" />
-                          </Button>
+                          </Button> */}
+
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                disabled={downloadingFiles[doc.id]}
+                                onClick={() =>
+                                  handleDownload(
+                                    doc.file_url,
+                                    doc.title,
+                                    doc.id
+                                  )
+                                }
+                              >
+                                {downloadingFiles[doc.id] ? (
+                                  <Loader className="mr-0 h-5 w-5 animate-spin" />
+                                ) : (
+                                  <Download className="h-4 w-4" />
+                                )}
+                              </Button>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
