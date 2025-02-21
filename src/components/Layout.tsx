@@ -762,9 +762,9 @@ function MainLayout({ children }: LayoutProps) {
               {Object.entries(megaMenuItems).map(([key, item]) => (
                 <div key={key}>
                   <button
-                    onClick={() =>
-                      setMegaMenuOpen(megaMenuOpen === key ? null : key)
-                    }
+                    onClick={() => {
+                      setMegaMenuOpen(megaMenuOpen === key ? null : key);
+                    }}
                     className="text-white flex items-center w-full text-left py-2 px-3 rounded-md hover:bg-gray-800 transition-all duration-200"
                   >
                     {key === "hansards" && (
@@ -789,6 +789,7 @@ function MainLayout({ children }: LayoutProps) {
                             <Link
                               key={year}
                               to="/hansards"
+                              onClick={() => setMobileMenuOpen(false)}
                               className="block text-gray-300 hover:text-white hover:bg-gray-800 px-3 py-2 rounded-md transition-all duration-200"
                             >
                               Hansards {year}
@@ -802,6 +803,7 @@ function MainLayout({ children }: LayoutProps) {
                                 to={`/judgments?court=${encodeURIComponent(
                                   subcategory
                                 )}`}
+                                onClick={() => setMobileMenuOpen(false)}
                                 className="block text-gray-300 hover:text-white hover:bg-gray-800 px-3 py-2 rounded-md transition-all duration-200"
                               >
                                 {subcategory}
@@ -820,6 +822,7 @@ function MainLayout({ children }: LayoutProps) {
                                       )}&division=${encodeURIComponent(
                                         division
                                       )}`}
+                                      onClick={() => setMobileMenuOpen(false)}
                                       className="block text-gray-300 hover:text-white hover:bg-gray-800 px-3 py-2 rounded-md transition-all duration-200"
                                     >
                                       {division}
@@ -829,11 +832,14 @@ function MainLayout({ children }: LayoutProps) {
                               </div>
                             )
                           )
-                        : key === "others"
+                        : key === "others" ||
+                          key === "legislation" ||
+                          key == "gazettes"
                         ? item.subcategories.map((subcategory) => (
                             <Link
                               key={subcategory.name}
                               to={subcategory.href}
+                              onClick={() => setMobileMenuOpen(false)}
                               className="block text-gray-300 hover:text-white hover:bg-gray-800 px-3 py-2 rounded-md transition-all duration-200"
                             >
                               {subcategory.name}
@@ -845,6 +851,7 @@ function MainLayout({ children }: LayoutProps) {
                               to={`/documents?category=${key}&subcategory=${encodeURIComponent(
                                 subcategory
                               )}`}
+                              onClick={() => setMobileMenuOpen(false)}
                               className="block text-gray-300 hover:text-white hover:bg-gray-800 px-3 py-2 rounded-md transition-all duration-200"
                             >
                               {subcategory}
@@ -861,6 +868,7 @@ function MainLayout({ children }: LayoutProps) {
                     {appContext?.user.user_role == "admin" && (
                       <Link
                         to="/dashboard"
+                        onClick={() => setMobileMenuOpen(false)}
                         className="block text-white hover:text-gray-100 py-2 px-3 rounded-md hover:bg-gray-800 transition-all duration-200"
                       >
                         <LayoutDashboard className="inline-block mr-2 h-5 w-5" />
@@ -868,7 +876,11 @@ function MainLayout({ children }: LayoutProps) {
                       </Link>
                     )}
                     <Link
-                      to="/login"
+                      to="/"
+                      onClick={() => {
+                        handleLogOut();
+                        setMobileMenuOpen(false);
+                      }}
                       className="block text-white hover:text-gray-100 py-2 px-3 rounded-md hover:bg-gray-800 transition-all duration-200"
                     >
                       <LogOut className="inline-block mr-2 h-5 w-5" />
@@ -878,6 +890,7 @@ function MainLayout({ children }: LayoutProps) {
                 ) : (
                   <Link
                     to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
                     className="block text-white hover:text-gray-100 py-2 px-3 rounded-md hover:bg-gray-800 transition-all duration-200"
                   >
                     <LogIn className="inline-block mr-2 h-5 w-5" />
