@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   BookOpen,
   Search,
@@ -27,6 +27,8 @@ import AppContext from "../context/AppContext";
 
 export default function ViewAllHansards() {
   const navigate = useNavigate();
+  const { year } = useParams();
+
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -83,14 +85,14 @@ export default function ViewAllHansards() {
 
   useEffect(() => {
     loadDocuments();
-  }, []);
+  }, [year]);
 
   const loadDocuments = async () => {
     setLoading(true);
     setError(null);
     try {
       const data = await fetchDocuments(
-        { category: "Hansards" },
+        { category: "Hansards", subcategory: `Hansards ${year}` },
         { field: "created_at", direction: "desc" }
       );
       setDocuments(data);
@@ -275,10 +277,10 @@ export default function ViewAllHansards() {
                                   <Calendar className="mr-1.5 h-4 w-4" />
                                   {formatDate(doc.created_at)}
                                 </span>
-                                {doc.metadata.session && (
+                                {doc.subcategory && (
                                   <span className="flex items-center">
                                     <Clock className="mr-1.5 h-4 w-4" />
-                                    {doc.metadata.session} Session
+                                    {doc.subcategory} Session
                                   </span>
                                 )}
                                 {doc.metadata.attendees && (

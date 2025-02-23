@@ -83,6 +83,11 @@ function DashboardLayout({ children }: LayoutProps) {
           icon: BookOpen,
         },
         {
+          name: "View Archival Materials",
+          href: "/dashboard/documents/archival-materials",
+          icon: BookOpen,
+        },
+        {
           name: "View Gazettes",
           href: "/dashboard/documents/gazettes",
           icon: FileSpreadsheet,
@@ -422,7 +427,7 @@ function MainLayout({ children }: LayoutProps) {
         },
         {
           name: "Statutory Instruments",
-          href: "/about",
+          href: "/statutory-instruments",
         },
       ],
 
@@ -431,7 +436,12 @@ function MainLayout({ children }: LayoutProps) {
 
     archival: {
       title: "Archival Materials",
-      subcategories: ["Archival Materials"],
+      subcategories: [
+        {
+          name: "Archival Materials",
+          href: "/archival-materials",
+        },
+      ],
     },
     // statutory: {
     //   title: "Statutory Instruments",
@@ -457,7 +467,7 @@ function MainLayout({ children }: LayoutProps) {
         // { name: "Partners", href: "/partners" },
         {
           name: "Open Access Resources",
-          href: "https://openaccess.educitevl.edu.ug",
+          href: "/open-access-resources",
           target: "_",
         },
         { name: "Educite Reports", href: "/educite_reports" },
@@ -533,7 +543,7 @@ function MainLayout({ children }: LayoutProps) {
                       onMouseLeave={() => setMegaMenuOpen(null)}
                     >
                       <div className="p-6">
-                        <div className="flex items-center space-x-2 mb-4 pb-4 border-b-2 border-blue-100">
+                        <div className="flex items-center space-x-2 mb-4 pb-4 border-b-2 border-blue-100 w-200">
                           {key === "hansards" && (
                             <BookOpen className="h-5 w-5 text-blue-600" />
                           )}
@@ -553,7 +563,7 @@ function MainLayout({ children }: LayoutProps) {
                             {item.title}
                           </h3>
                         </div>
-                        <div className="grid grid-cols-10 gap-6">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                           {key === "hansards" ? (
                             // Hansards columns
                             item.columns.map((column, columnIndex) => (
@@ -561,7 +571,7 @@ function MainLayout({ children }: LayoutProps) {
                                 {column.map((year) => (
                                   <Link
                                     key={year}
-                                    to="/hansards"
+                                    to={`/hansards/${year}`}
                                     className="block text-gray-700 hover:text-blue-600 hover:bg-blue-100/50 px-3 py-2 rounded-lg transition-all duration-200 text-sm"
                                   >
                                     Hansards {year}
@@ -595,11 +605,12 @@ function MainLayout({ children }: LayoutProps) {
                                       {subcategory.divisions.map((division) => (
                                         <Link
                                           key={division}
-                                          to={`/judgments?court=${encodeURIComponent(
-                                            subcategory.name
-                                          )}&division=${encodeURIComponent(
-                                            division
-                                          )}`}
+                                          // to={`/judgments?court=${encodeURIComponent(
+                                          //   subcategory.name
+                                          // )}&division=${encodeURIComponent(
+                                          //   division
+                                          // )}`}
+                                          to={`/judgments?court=${subcategory.name}/${division}`}
                                           className="block text-gray-700 hover:text-blue-600 hover:bg-blue-100/50 px-3 py-2 rounded-lg transition-all duration-200 text-sm"
                                         >
                                           {division}
@@ -612,18 +623,19 @@ function MainLayout({ children }: LayoutProps) {
                             </div>
                           ) : key === "others" ||
                             key === "legislation" ||
-                            key == "gazettes" ? (
+                            key == "gazettes" ||
+                            key == "archival" ? (
                             // Others menu with links
-                            <div className="col-span-10 grid grid-cols-3 gap-6">
+                            <div className="col-span-2 grid grid-cols-auto gap-2">
                               {item.subcategories.map((subcategory) => (
                                 <Link
                                   key={subcategory.name}
                                   to={subcategory.href}
-                                  target={
-                                    subcategory.name == "Open Access Resources"
-                                      ? "_blank"
-                                      : "_self"
-                                  }
+                                  // target={
+                                  //   subcategory.name == "Open Access Resources"
+                                  //     ? "_blank"
+                                  //     : "_self"
+                                  // }
                                   className="text-gray-700 hover:text-blue-600 hover:bg-blue-100/50 px-3 py-2 rounded-lg transition-all duration-200 text-sm"
                                 >
                                   {subcategory.name}
@@ -785,10 +797,10 @@ function MainLayout({ children }: LayoutProps) {
                   {megaMenuOpen === key && (
                     <div className="pl-6 mt-2 space-y-2">
                       {key === "hansards"
-                        ? item.columns.flat().map((year) => (
+                        ? item.columns.flat().map((year: any) => (
                             <Link
                               key={year}
-                              to="/hansards"
+                              to={`/hansards/${year}`}
                               onClick={() => setMobileMenuOpen(false)}
                               className="block text-gray-300 hover:text-white hover:bg-gray-800 px-3 py-2 rounded-md transition-all duration-200"
                             >
@@ -834,7 +846,8 @@ function MainLayout({ children }: LayoutProps) {
                           )
                         : key === "others" ||
                           key === "legislation" ||
-                          key == "gazettes"
+                          key == "gazettes" ||
+                          key == "archival"
                         ? item.subcategories.map((subcategory) => (
                             <Link
                               key={subcategory.name}
@@ -965,7 +978,7 @@ function MainLayout({ children }: LayoutProps) {
                 </li>
                 <li>
                   <Link
-                    to="/contact"
+                    to="/contact-us"
                     className="text-gray-400 hover:text-white transition-colors duration-200"
                   >
                     Contact
@@ -974,8 +987,8 @@ function MainLayout({ children }: LayoutProps) {
 
                 <li>
                   <Link
-                    to="https://openaccess.educitevl.edu.ug"
-                    target="_"
+                    to="/open-access-resources"
+                    // target="_"
                     className="text-gray-400 hover:text-white transition-colors duration-200"
                   >
                     Open Access Resources

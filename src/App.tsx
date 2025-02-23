@@ -42,6 +42,11 @@ import ViewAllHansards from "./pages/ViewAllHansards";
 import ViewAllGazettes from "./pages/ViewAllGazettes";
 import OpenAccessResources from "./pages/OpenAccessResources";
 import AppContext from "./context/AppContext";
+import ContactUs from "./pages/ContactUs";
+import StatutoryInstruments from "./pages/StatutoryInstruments";
+import ArchivalMaterials from "./pages/ArchivalMaterials";
+import ViewArchivalMaterials from "./pages/dashboard/ViewArchivalMaterials";
+import EduciteReports from "./pages/EduciteReports";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -141,6 +146,10 @@ function App() {
                   element={<ViewHansards />}
                 />
                 <Route
+                  path="/dashboard/documents/archival-materials"
+                  element={<ViewArchivalMaterials />}
+                />
+                <Route
                   path="/dashboard/documents/gazettes"
                   element={<ViewGazettes />}
                 />
@@ -175,13 +184,23 @@ function App() {
 
                 {/* Public View All Routes */}
                 <Route path="/judgments" element={<ViewAllJudgments />} />
+                <Route
+                  path="/statutory-instruments"
+                  element={<StatutoryInstruments />}
+                />
+                <Route
+                  path="/archival-materials"
+                  element={<ArchivalMaterials />}
+                />
+                <Route path="/educite_reports" element={<EduciteReports />} />
                 <Route path="/legislation" element={<ViewAllLegislation />} />
-                <Route path="/hansards" element={<ViewAllHansards />} />
+                <Route path="/hansards/:year" element={<ViewAllHansards />} />
                 <Route path="/gazettes" element={<ViewAllGazettes />} />
                 <Route
                   path="/open-access-resources"
                   element={<OpenAccessResources />}
                 />
+                <Route path="/contact-us" element={<ContactUs />} />
               </Routes>
             </Suspense>
           </Layout>

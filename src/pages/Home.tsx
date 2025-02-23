@@ -21,6 +21,7 @@ import {
   Briefcase,
   Download,
   View,
+  Loader,
 } from "lucide-react";
 import type { Document } from "../types";
 import { Button } from "../components/ui/Button";
@@ -29,6 +30,7 @@ import { PaymentModal } from "../components/PaymentModal";
 import { fetchDocuments } from "../lib/documents";
 import { FilePreview } from "../components/ui/FilePreview";
 import AppContext from "../context/AppContext";
+import { supabase } from "../lib/supabase";
 
 // Mock data for recent sections
 const recentData = {
@@ -185,7 +187,7 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
   const [filters, setFilters] = useState({});
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<any[] | null>([]);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -198,29 +200,27 @@ export default function Home() {
     (typeof subscriptionPlans)[0] | null
   >(null);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [loadingDocuments, setLoadingDocuments] = useState(false);
   const appContext = useContext(AppContext);
 
   const handleSearch = async () => {
     // TODO: Implement actual search when Supabase is connected
-    const mockResults = [
-      {
-        id: "1",
-        title: "Supreme Court Judgment 2023",
-        category: "Courts of Record",
-        subcategory: "Supreme Court of Uganda",
-        fileType: "pdf",
-        date: "2023-12-01",
-      },
-      {
-        id: "2",
-        title: "Parliamentary Proceedings Feb 2024",
-        category: "Hansards",
-        subcategory: "Hansards 2025-2004",
-        fileType: "pdf",
-        date: "2024-02-15",
-      },
-    ];
-    setSearchResults(mockResults);
+
+    if (searchTerm == "") return;
+
+    setLoadingDocuments(true);
+    let { data: documents, error } = await supabase
+      .from("documents")
+      .select("*")
+      .ilike("title", `%${searchTerm}%`);
+
+    console.log("error", error);
+
+    console.log("documents", documents);
+
+    setLoadingDocuments(false);
+
+    setSearchResults(documents);
   };
 
   const handleSubscribe = (plan: (typeof subscriptionPlans)[0]) => {
@@ -452,8 +452,16 @@ export default function Home() {
                     variant="secondary"
                     onClick={handleSearch}
                     className="bg-white text-blue-600 hover:bg-gray-50"
+                    disabled={loadingDocuments}
                   >
-                    Search Documents
+                    {loadingDocuments ? (
+                      <>
+                        <Loader className="mr-2 h-5 w-5 animate-spin" />
+                        {"Searching Documents..."}
+                      </>
+                    ) : (
+                      "Search Documents"
+                    )}
                   </Button>
                 </div>
               </div>

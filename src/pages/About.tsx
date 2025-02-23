@@ -1,50 +1,67 @@
-import { Book, Scale, Users, Globe, Lightbulb, GraduationCap, BookOpen, Library } from 'lucide-react';
-import { Button } from '../components/ui/Button';
+import {
+  Book,
+  Scale,
+  Users,
+  Globe,
+  Lightbulb,
+  GraduationCap,
+  BookOpen,
+  Library,
+} from "lucide-react";
+import { Button } from "../components/ui/Button";
 
 const features = [
   {
     icon: Book,
-    title: 'Comprehensive Collection',
-    description: 'Access to a vast library of legal documents, including judgments, legislations, and learning materials.'
+    title: "Comprehensive Collection",
+    description:
+      "Access to a vast library of legal documents, including judgments, legislations, and learning materials.",
   },
   {
     icon: Scale,
-    title: 'Legal Excellence',
-    description: 'Supporting legal professionals with up-to-date resources and research tools.'
+    title: "Legal Excellence",
+    description:
+      "Supporting legal professionals with up-to-date resources and research tools.",
   },
   {
     icon: Users,
-    title: 'Inclusive Access',
-    description: 'Serving judges, advocates, students, researchers, and academics across Uganda and beyond.'
+    title: "Inclusive Access",
+    description:
+      "Serving judges, advocates, students, researchers, and academics across Uganda and beyond.",
   },
   {
     icon: Globe,
-    title: 'Digital Innovation',
-    description: 'Leveraging ICT-based tools to provide remote access to legal content in real-time.'
-  }
+    title: "Digital Innovation",
+    description:
+      "Leveraging ICT-based tools to provide remote access to legal content in real-time.",
+  },
 ];
 
 const objectives = [
   {
     icon: Lightbulb,
-    title: 'Knowledge Enhancement',
-    description: 'Strengthening legal education through comprehensive digital resources.'
+    title: "Knowledge Enhancement",
+    description:
+      "Strengthening legal education through comprehensive digital resources.",
   },
   {
     icon: GraduationCap,
-    title: 'Research Support',
-    description: 'Facilitating in-depth legal research with advanced tools and databases.'
+    title: "Research Support",
+    description:
+      "Facilitating in-depth legal research with advanced tools and databases.",
   },
   {
     icon: BookOpen,
-    title: 'Content Accessibility',
-    description: 'Making legal information readily available through affordable subscription plans.'
+    title: "Content Accessibility",
+    description:
+      "Making legal information readily available through affordable subscription plans.",
   },
   {
     icon: Library,
-    title: 'Digital Transformation',
-    description: 'Modernizing legal resource access through virtual library solutions.'
-  }
+    title: "Digital Transformation",
+    description:
+      "Modernizing legal resource access through virtual library solutions.",
+  },
 ];
 
 export default function About() {
@@ -52,13 +69,14 @@ export default function About() {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <div className="relative bg-blue-900 py-24">
-        <div 
+        <div
           className="absolute inset-0 z-0 opacity-20"
           style={{
-            backgroundImage: 'url("https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&q=80")',
-            backgroundPosition: 'center',
-            backgroundSize: 'cover',
-            backgroundRepeat: 'no-repeat'
+            backgroundImage:
+              'url("https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&q=80")',
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
           }}
         />
         <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
@@ -67,7 +85,8 @@ export default function About() {
               About Educite Virtual Library
             </h1>
             <p className="mt-6 text-lg leading-8 text-blue-100">
-              Empowering legal professionals and researchers with comprehensive digital access to legal resources
+              Empowering legal professionals and researchers with comprehensive
+              digital access to legal resources
             </p>
           </div>
         </div>
@@ -81,7 +100,10 @@ export default function About() {
               Our Mission
             </h2>
             <p className="mt-6 text-lg leading-8 text-gray-600">
-              Educite Virtual Library's primary purpose is to reinforce learning and acquisition of legal knowledge by providing a more solid basis for legal education and research. We enhance the quality of life by drawing on digitally available content using ICT-based tools.
+              Educite Virtual Library's primary purpose is to reinforce learning
+              and acquisition of legal knowledge by providing a more solid basis
+              for legal education and research. We enhance the quality of life
+              by drawing on digitally available content using ICT-based tools.
             </p>
           </div>
         </div>
@@ -95,7 +117,8 @@ export default function About() {
               What We Offer
             </h2>
             <p className="mt-6 text-lg leading-8 text-gray-600">
-              Our comprehensive virtual library provides remote access to a variety of local and foreign legal content
+              Our comprehensive virtual library provides remote access to a
+              variety of local and foreign legal content
             </p>
           </div>
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
@@ -123,12 +146,13 @@ export default function About() {
 
       {/* Significance Section */}
       <div className="relative isolate overflow-hidden bg-blue-900 py-24 sm:py-32">
-        <div 
+        <div
           className="absolute inset-0 -z-10 opacity-10"
           style={{
-            backgroundImage: 'url("https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80")',
-            backgroundPosition: 'center',
-            backgroundSize: 'cover'
+            backgroundImage:
+              'url("https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80")',
+            backgroundPosition: "center",
+            backgroundSize: "cover",
           }}
         />
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -137,7 +161,13 @@ export default function About() {
               Our Significance
             </h2>
             <p className="mt-6 text-lg leading-8 text-blue-100">
-              Educite Virtual Library aims to play a crucial role in democratizing access to legal information, empowering legal professionals, researchers, students, and the general public to engage with the law more effectively. By harnessing the power of technology to aggregate, organize, and disseminate legal knowledge, we aim to contribute to the efficiency, accuracy, and accessibility of legal research and practice in the digital age.
+              Educite Virtual Library aims to play a crucial role in
+              democratizing access to legal information, empowering legal
+              professionals, researchers, students, and the general public to
+              engage with the law more effectively. By harnessing the power of
+              technology to aggregate, organize, and disseminate legal
+              knowledge, we aim to contribute to the efficiency, accuracy, and
+              accessibility of legal research and practice in the digital age.
             </p>
           </div>
         </div>
@@ -151,7 +181,8 @@ export default function About() {
               Our Objectives
             </h2>
             <p className="mt-6 text-lg leading-8 text-gray-600">
-              Promoting collaboration, innovation, and the exchange of ideas within the legal community
+              Promoting collaboration, innovation, and the exchange of ideas
+              within the legal community
             </p>
           </div>
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
@@ -159,7 +190,7 @@ export default function About() {
               {objectives.map((objective) => {
                 const Icon = objective.icon;
                 return (
-                  <div 
+                  <div
                     key={objective.title}
                     className="flex flex-col rounded-2xl bg-gray-50 p-8 hover:bg-gray-100 transition-colors"
                   >
@@ -190,20 +221,21 @@ export default function About() {
               Start Your Legal Research Journey
             </h2>
             <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-300">
-              Join our community of legal professionals and researchers. Access comprehensive legal resources and advanced research tools.
+              Join our community of legal professionals and researchers. Access
+              comprehensive legal resources and advanced research tools.
             </p>
             <div className="mt-10 flex items-center justify-center gap-6">
               <Button
                 variant="primary"
                 className="bg-white text-gray-900 hover:bg-gray-100"
-                onClick={() => window.location.href = '/register'}
+                onClick={() => (window.location.href = "/register")}
               >
                 Get Started
               </Button>
               <Button
                 variant="outline"
                 className="text-white border-white hover:bg-white/10"
-                onClick={() => window.location.href = '/contact'}
+                onClick={() => (window.location.href = "/contact-us")}
               >
                 Contact Us
               </Button>

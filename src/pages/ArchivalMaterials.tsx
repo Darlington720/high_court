@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
-  Gavel,
+  Scroll,
   Search,
   Filter,
   Download,
@@ -14,6 +14,7 @@ import {
   Lock,
   ChevronRight,
   ChevronLeft,
+  FileText,
   Loader,
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
@@ -23,30 +24,25 @@ import { PaymentModal } from "../components/PaymentModal";
 import type { Document } from "../types";
 import AppContext from "../context/AppContext";
 
-export default function ViewAllJudgments() {
+export default function ArchivalMaterials() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const court = searchParams.get("court");
-  const appContext = useContext(AppContext);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
-    court: "",
+    type: "",
     year: "",
-    judge: "",
-    caseType: "",
+    status: "",
   });
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
+  const appContext = useContext(AppContext);
   const [downloadingFiles, setDownloadingFiles] = useState({});
-
-  // console.log("court", court);
 
   const handlePreview = (fileUrl: string) => {
     window.open(fileUrl, "_blank");
@@ -86,28 +82,26 @@ export default function ViewAllJudgments() {
 
   useEffect(() => {
     loadDocuments();
-  }, [court]);
+  }, []);
 
   const loadDocuments = async () => {
     setLoading(true);
     setError(null);
     try {
       const data = await fetchDocuments(
-        { category: "Courts of Record", subcategory: court },
+        { category: "Archival Materials" },
         { field: "created_at", direction: "desc" }
       );
-
       setDocuments(data);
     } catch (err) {
-      setError("Failed to load judgments. Please try again.");
-      console.error("Error loading judgments:", err);
+      setError("Failed to load legislation. Please try again.");
+      console.error("Error loading legislation:", err);
     } finally {
       setLoading(false);
     }
   };
 
   const _handleDownload = (doc: Document) => {
-    // Show payment modal if user is not subscribed
     setShowPaymentModal(true);
     setSelectedPlan({
       name: "Bronze",
@@ -124,23 +118,12 @@ export default function ViewAllJudgments() {
         k.toLowerCase().includes(searchTerm.toLowerCase())
       );
 
-    const matchesCourt =
-      !filters.court ||
-      doc.subcategory === filters.court ||
-      doc.category === filters.court;
+    const matchesType = !filters.type || doc.metadata.type === filters.type;
     const matchesYear = !filters.year || doc.created_at.includes(filters.year);
-    const matchesJudge =
-      !filters.judge || doc.metadata.judge?.includes(filters.judge);
-    const matchesCaseType =
-      !filters.caseType || doc.metadata.caseType === filters.caseType;
+    const matchesStatus =
+      !filters.status || doc.metadata.status === filters.status;
 
-    return (
-      matchesSearch &&
-      matchesCourt &&
-      matchesYear &&
-      matchesJudge &&
-      matchesCaseType
-    );
+    return matchesSearch && matchesType && matchesYear && matchesStatus;
   });
 
   // Pagination
@@ -157,10 +140,10 @@ export default function ViewAllJudgments() {
           {/* Header */}
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              Recent Judgments
+              Archival Materials
             </h1>
             <p className="mt-2 text-lg text-gray-600">
-              Browse and search through recent court judgments
+              Browse and search through recent Archival Materials
             </p>
           </div>
 
@@ -174,7 +157,7 @@ export default function ViewAllJudgments() {
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search judgments..."
+                    placeholder="Search archival materials..."
                     className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -190,29 +173,22 @@ export default function ViewAllJudgments() {
             </div>
 
             {showFilters && (
-              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Court
+                    Type
                   </label>
                   <select
-                    value={filters.court}
+                    value={filters.type}
                     onChange={(e) =>
-                      setFilters({ ...filters, court: e.target.value })
+                      setFilters({ ...filters, type: e.target.value })
                     }
                     className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   >
-                    <option value="">All Courts</option>
-                    <option value="Supreme Court of Uganda">
-                      Supreme Court
-                    </option>
-                    <option value="Court of Appeal of Uganda">
-                      Court of Appeal
-                    </option>
-                    <option value="Constitutional Court of Uganda">
-                      Constitutional Court
-                    </option>
-                    <option value="Courts of Record">High Court</option>
+                    <option value="">All Types</option>
+                    <option value="act">Act</option>
+                    <option value="bill">Bill</option>
+                    <option value="amendment">Amendment</option>
                   </select>
                 </div>
                 <div>
@@ -239,20 +215,19 @@ export default function ViewAllJudgments() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Case Type
+                    Status
                   </label>
                   <select
-                    value={filters.caseType}
+                    value={filters.status}
                     onChange={(e) =>
-                      setFilters({ ...filters, caseType: e.target.value })
+                      setFilters({ ...filters, status: e.target.value })
                     }
                     className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   >
-                    <option value="">All Types</option>
-                    <option value="civil">Civil</option>
-                    <option value="criminal">Criminal</option>
-                    <option value="constitutional">Constitutional</option>
-                    <option value="commercial">Commercial</option>
+                    <option value="">All Statuses</option>
+                    <option value="active">In Force</option>
+                    <option value="pending">Pending</option>
+                    <option value="repealed">Repealed</option>
                   </select>
                 </div>
               </div>
@@ -263,7 +238,7 @@ export default function ViewAllJudgments() {
           {loading ? (
             <div className="text-center py-12">
               <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-              <p className="mt-4 text-gray-600">Loading judgments...</p>
+              <p className="mt-4 text-gray-600">Loading legislation...</p>
             </div>
           ) : error ? (
             <div className="bg-red-50 p-4 rounded-lg">
@@ -287,7 +262,7 @@ export default function ViewAllJudgments() {
                         <div className="flex-1">
                           <div className="flex items-center gap-4">
                             <div className="rounded-lg bg-blue-50 p-2">
-                              <Gavel className="h-6 w-6 text-blue-600" />
+                              <Scroll className="h-6 w-6 text-blue-600" />
                             </div>
                             <div>
                               <h3 className="text-lg font-medium text-gray-900">
@@ -295,17 +270,17 @@ export default function ViewAllJudgments() {
                               </h3>
                               <div className="mt-1 flex items-center gap-4 text-sm text-gray-500">
                                 <span className="flex items-center">
-                                  <Building2 className="mr-1.5 h-4 w-4" />
-                                  {doc.subcategory}
+                                  <FileText className="mr-1.5 h-4 w-4" />
+                                  {doc.metadata.type || "Act"}
                                 </span>
                                 <span className="flex items-center">
                                   <Calendar className="mr-1.5 h-4 w-4" />
                                   {formatDate(doc.created_at)}
                                 </span>
-                                {doc.metadata.caseNumber && (
+                                {doc.metadata.actNumber && (
                                   <span className="flex items-center">
                                     <Tag className="mr-1.5 h-4 w-4" />
-                                    {doc.metadata.caseNumber}
+                                    Act No. {doc.metadata.actNumber}
                                   </span>
                                 )}
                               </div>
@@ -322,6 +297,13 @@ export default function ViewAllJudgments() {
                               >
                                 <Eye className="h-4 w-4" />
                               </Button>
+                              {/* <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDownload(doc)}
+                          >
+                            <Lock className="h-4 w-4" />
+                          </Button> */}
 
                               <Button
                                 variant="ghost"
@@ -388,7 +370,7 @@ export default function ViewAllJudgments() {
                         Get Full Access
                       </h3>
                       <p className="mt-2 text-blue-200">
-                        Subscribe to download judgments and access premium
+                        Subscribe to download legislation and access premium
                         features
                       </p>
                     </div>

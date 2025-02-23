@@ -260,7 +260,7 @@ export async function deleteDocument(document: Document) {
 
     // Check user permissions
     const { data: userData, error: roleError } = await supabase
-      .from("users")
+      .from("_users")
       .select("role")
       .eq("id", user.id)
       .single();

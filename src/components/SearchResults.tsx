@@ -1,5 +1,7 @@
-import { FileText, Download, ExternalLink } from 'lucide-react';
-import { Button } from './ui/Button';
+import { FileText, Download, ExternalLink } from "lucide-react";
+import { Button } from "./ui/Button";
+import { useContext } from "react";
+import AppContext from "../context/AppContext";
 
 interface SearchResult {
   id: string;
@@ -15,11 +17,31 @@ interface SearchResultsProps {
 }
 
 export function SearchResults({ results }: SearchResultsProps) {
+  const appContext = useContext(AppContext);
+
+  const handlePreview = (fileUrl: string) => {
+    window.open(fileUrl, "_blank");
+  };
+
+  const handleDownload = (doc: any) => {
+    console.log(doc);
+    const link = document.createElement("a");
+    link.href = doc.file_url;
+    link.setAttribute("download", doc.title); // Suggests a filename
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="overflow-hidden rounded-lg bg-white shadow">
       <div className="px-4 py-5 sm:px-6">
-        <h3 className="text-lg font-medium leading-6 text-gray-900">Search Results</h3>
-        <p className="mt-1 text-sm text-gray-500">Found {results.length} documents</p>
+        <h3 className="text-lg font-medium leading-6 text-gray-900">
+          Search Results
+        </h3>
+        <p className="mt-1 text-sm text-gray-500">
+          Found {results.length} documents
+        </p>
       </div>
       <div className="border-t border-gray-200">
         <div className="overflow-x-auto">
@@ -38,44 +60,63 @@ export function SearchResults({ results }: SearchResultsProps) {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Type
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
+                {appContext?.user && (
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {results.map((result) => (
                 <tr key={result.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
+                  <td className="px-6 py-4">
+                    <div
+                      className="flex items-center"
+                      style={{
+                        width: 300,
+                      }}
+                    >
                       <FileText className="h-5 w-5 text-gray-400 mr-3" />
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{result.title}</div>
-                        <div className="text-sm text-gray-500">{result.subcategory}</div>
+                        <div className="text-sm font-medium text-gray-900 ">
+                          {result.title}
+                        </div>
+                        <div className="text-sm text-gray-500 w-60">
+                          {result.subcategory}
+                        </div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 w-60">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                       {result.category}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(result.date).toLocaleDateString()}
+                    {new Date(result.updated_at).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 uppercase">
-                    {result.fileType}
+                  <td className="px-6 py-4  text-sm text-gray-500 w-20">
+                    {result.metadata.type}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex justify-end space-x-2">
-                      <Button variant="ghost" size="sm">
-                        <Download className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <ExternalLink className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </td>
+                  {appContext?.user && (
+                    <td className="px-6 py-4 text-right text-sm font-medium">
+                      <div className="flex justify-end space-x-2">
+                        <Button variant="ghost" size="sm">
+                          <Download
+                            className="h-4 w-4"
+                            onClick={() => handleDownload(result)}
+                          />
+                        </Button>
+                        <Button variant="ghost" size="sm">
+                          <ExternalLink
+                            className="h-4 w-4"
+                            onClick={() => handlePreview(result.file_url)}
+                          />
+                        </Button>
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
