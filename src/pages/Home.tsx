@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   FileText,
   Shield,
@@ -31,6 +31,8 @@ import { fetchDocuments } from "../lib/documents";
 import { FilePreview } from "../components/ui/FilePreview";
 import AppContext from "../context/AppContext";
 import { supabase } from "../lib/supabase";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Mock data for recent sections
 const recentData = {
@@ -120,8 +122,10 @@ const subscriptionPlans = [
   {
     name: "Bronze",
     description: "Perfect for individual legal professionals",
-    price: 30000,
-    duration: "1 Day",
+    prices: [
+      { price: 30000, duration: "Daily" },
+      { price: 350000, duration: "Annually" },
+    ],
     icon: Clock,
     color: "amber",
     features: [
@@ -131,13 +135,12 @@ const subscriptionPlans = [
       "Document previews",
       "Download access",
     ],
-    bestFor: "Individual Users",
+    bestFor: "Individual- Researchers, Lawyers, Students.",
   },
   {
     name: "Silver",
     description: "Ideal for local organizations and institutions",
-    price: 2500000,
-    duration: "Per year",
+    prices: [{ price: 2500000, duration: "Annually" }],
     icon: Building2,
     color: "slate",
     features: [
@@ -147,13 +150,13 @@ const subscriptionPlans = [
       "Priority support",
       "Bulk downloads",
     ],
-    bestFor: "Local Law Firms, NGOs, Schools",
+    bestFor:
+      "Local Law Firms, Local NGOs, Local Research Institutions, Schools and Businesses",
   },
   {
     name: "Gold",
     description: "Perfect for larger organizations",
-    price: 10000000,
-    duration: "Per year",
+    prices: [{ price: 10000000, duration: "Annually" }],
     icon: Briefcase,
     color: "yellow",
     features: [
@@ -163,13 +166,17 @@ const subscriptionPlans = [
       "Custom integrations",
       "Dedicated support",
     ],
-    bestFor: "Banks, MDAs",
+    bestFor: "Banks (Branches), MDAs",
   },
   {
     name: "Platinum",
     description: "Enterprise-grade solution",
-    price: 35000000,
-    duration: "Per year",
+    prices: [
+      { price: 35000000, users: 300, duration: "Annually" },
+      { price: 50000000, users: 600, duration: "Annually" },
+      { price: 70000000, users: 1000, duration: "Annually" },
+      { price: 100000000, users: 2000, duration: "Annually" },
+    ],
     icon: Globe,
     color: "slate",
     features: [
@@ -179,15 +186,17 @@ const subscriptionPlans = [
       "Advanced security features",
       "24/7 Priority support",
     ],
-    bestFor: "Academic Institutions, Foreign Companies",
+    bestFor:
+      "Academic Institutions, Foreign Companies, Embassies, Foreign Law Firms, Banks.",
   },
 ];
 
 export default function Home() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
   const [filters, setFilters] = useState({});
-  const [searchResults, setSearchResults] = useState<any[] | null>([]);
+  const [searchResults, setSearchResults] = useState<any[] | null>(null);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -216,9 +225,13 @@ export default function Home() {
 
     console.log("error", error);
 
-    console.log("documents", documents);
+    // console.log("documents", documents);
 
     setLoadingDocuments(false);
+
+    if (documents?.length == 0) {
+      toast.info("No documents match your search.");
+    }
 
     setSearchResults(documents);
   };
@@ -306,6 +319,15 @@ export default function Home() {
       console.error("Error loading judgments:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDocClick = (item) => {
+    if (!appContext?.user) {
+      toast.warn("You need to log in to access this document.");
+      navigate("/login");
+    } else {
+      handlePreview(item.file_url);
     }
   };
 
@@ -471,7 +493,7 @@ export default function Home() {
       </div>
 
       {/* Search Results */}
-      {searchResults.length > 0 && (
+      {searchResults && (
         <div className="mx-auto max-w-7xl px-6 py-8">
           <SearchResults results={searchResults} />
         </div>
@@ -502,7 +524,13 @@ export default function Home() {
             <div className="divide-y divide-gray-200">
               {judgements.map((item: any) => (
                 <div key={item.id} className="py-4">
-                  <h3 className="text-sm font-medium text-gray-900">
+                  <h3
+                    className="text-sm font-medium text-gray-900 pointer"
+                    style={{
+                      cursor: "pointer",
+                    }}
+                    onClick={() => handleDocClick(item)}
+                  >
                     {item.title}
                   </h3>
 
@@ -562,7 +590,13 @@ export default function Home() {
             <div className="divide-y divide-gray-200">
               {legislation.map((item) => (
                 <div key={item.id} className="py-4">
-                  <h3 className="text-sm font-medium text-gray-900">
+                  <h3
+                    className="text-sm font-medium text-gray-900"
+                    style={{
+                      cursor: "pointer",
+                    }}
+                    onClick={() => handleDocClick(item)}
+                  >
                     {item.title}
                   </h3>
                   <div className="mt-1 flex items-center text-sm text-gray-500">
@@ -618,7 +652,13 @@ export default function Home() {
             <div className="divide-y divide-gray-200">
               {hansards.map((item) => (
                 <div key={item.id} className="py-4">
-                  <h3 className="text-sm font-medium text-gray-900">
+                  <h3
+                    className="text-sm font-medium text-gray-900"
+                    style={{
+                      cursor: "pointer",
+                    }}
+                    onClick={() => handleDocClick(item)}
+                  >
                     {item.title}
                   </h3>
                   <div className="mt-1 flex items-center text-sm text-gray-500">
@@ -674,7 +714,13 @@ export default function Home() {
             <div className="divide-y divide-gray-200">
               {gazettes.map((item) => (
                 <div key={item.id} className="py-4">
-                  <h3 className="text-sm font-medium text-gray-900">
+                  <h3
+                    className="text-sm font-medium text-gray-900"
+                    style={{
+                      cursor: "pointer",
+                    }}
+                    onClick={() => handleDocClick(item)}
+                  >
                     {item.title}
                   </h3>
                   <div className="mt-1 flex items-center text-sm text-gray-500">
@@ -769,14 +815,23 @@ export default function Home() {
                   <p className="mt-4 text-sm leading-6 text-gray-600">
                     {plan.description}
                   </p>
-                  <div className="mt-6 flex items-baseline gap-x-1">
-                    <span className="text-lg font-semibold text-gray-600">
-                      UGX {plan.price.toLocaleString()}
-                    </span>
-                    <span className="text-sm font-semibold leading-6 text-gray-600">
-                      /{plan.duration}
-                    </span>
-                  </div>
+                  {plan.prices.map((price: any, i: number) => (
+                    <div key={i} className="mt-2 flex items-baseline gap-x-1">
+                      <span className="text-lg font-semibold text-gray-600">
+                        {price.users ? "" : "UGX"}{" "}
+                        {price.price.toLocaleString()}
+                      </span>
+                      {price.users ? (
+                        <span className="text-sm font-semibold leading-6 text-gray-600">
+                          / {price.users} Users / {price.duration}
+                        </span>
+                      ) : (
+                        <span className="text-sm font-semibold leading-6 text-gray-600">
+                          / {price.duration}
+                        </span>
+                      )}
+                    </div>
+                  ))}
                   <div className="mt-8 text-sm font-medium text-gray-500">
                     Best for: {plan.bestFor}
                   </div>

@@ -10,7 +10,7 @@ export interface Document {
     size: number;
     type: string;
     lastModified: number;
-    status?: 'active' | 'archived' | 'draft';
+    status?: "active" | "archived" | "draft";
     version?: string;
     author?: string;
     keywords?: string[];
@@ -28,6 +28,7 @@ export interface Category {
 
 export interface DocumentFilter {
   category?: string;
+  title?: string;
   subcategory?: string;
   status?: string;
   dateRange?: {
@@ -39,6 +40,6 @@ export interface DocumentFilter {
 }
 
 export interface DocumentSort {
-  field: 'title' | 'created_at' | 'updated_at' | 'size';
-  direction: 'asc' | 'desc';
+  field: "title" | "created_at" | "updated_at" | "size";
+  direction: "asc" | "desc";
 }

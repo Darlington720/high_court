@@ -98,6 +98,11 @@ function DashboardLayout({ children }: LayoutProps) {
           icon: FileText,
         },
         {
+          name: "View Courts of Record",
+          href: "/dashboard/documents/courts-of-record",
+          icon: FileText,
+        },
+        {
           name: "View Statutory Instruments",
           href: "/dashboard/documents/statutory",
           icon: FileSpreadsheet,

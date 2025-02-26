@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Suspense, useState } from "react";
+import { ToastContainer } from "react-toastify";
 import { Layout } from "./components/Layout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import Home from "./pages/Home";
@@ -47,16 +48,26 @@ import StatutoryInstruments from "./pages/StatutoryInstruments";
 import ArchivalMaterials from "./pages/ArchivalMaterials";
 import ViewArchivalMaterials from "./pages/dashboard/ViewArchivalMaterials";
 import EduciteReports from "./pages/EduciteReports";
+import ScrollToTop from "./components/ScrollToTop";
+import ViewCourtsOfRecord from "./pages/dashboard/ViewCourtsOfRecord";
 
 function App() {
   const [user, setUser] = useState(null);
+  const [editDocModalVisible, setEditDocModalVisible] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState(false);
+
   return (
     <AppContext.Provider
       value={{
         user,
         setUser,
+        editDocModalVisible,
+        setEditDocModalVisible,
+        selectedDocument,
+        setSelectedDocument,
       }}
     >
+      <ToastContainer position="top-center" autoClose={3000} />
       <ErrorBoundary>
         <Router>
           <Layout>
@@ -67,6 +78,7 @@ function App() {
                 </div>
               }
             >
+              <ScrollToTop />
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
@@ -156,6 +168,10 @@ function App() {
                 <Route
                   path="/dashboard/documents/acts"
                   element={<ViewActsOfParliament />}
+                />
+                <Route
+                  path="/dashboard/documents/courts-of-record"
+                  element={<ViewCourtsOfRecord />}
                 />
                 <Route
                   path="/dashboard/documents/statutory"

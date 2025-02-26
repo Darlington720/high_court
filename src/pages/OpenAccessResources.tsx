@@ -43,7 +43,7 @@ export default function OpenAccessResources() {
 
       {/* Iframe with dynamic height */}
       <iframe
-        src="./test.html"
+        src="/test.html"
         width="100%"
         height={iframeHeight}
         style={{ border: "none", overflow: "hidden" }}

@@ -200,6 +200,10 @@ export async function fetchDocuments(
     if (filters.category) {
       query = query.eq("category", filters.category);
     }
+
+    if (filters.title) {
+      query = query.ilike("title", `%${filters.title}%`);
+    }
     if (filters.subcategory) {
       query = query.eq("subcategory", filters.subcategory);
     }
@@ -261,12 +265,12 @@ export async function deleteDocument(document: Document) {
     // Check user permissions
     const { data: userData, error: roleError } = await supabase
       .from("_users")
-      .select("role")
+      .select("user_role")
       .eq("id", user.id)
       .single();
 
     if (roleError) throw roleError;
-    if (userData.role !== "admin") {
+    if (userData.user_role !== "admin") {
       throw new Error("Only administrators can delete documents");
     }
 
@@ -312,13 +316,15 @@ export async function updateDocument(id: string, updates: Partial<Document>) {
 
     // Check user permissions
     const { data: userData, error: roleError } = await supabase
-      .from("users")
-      .select("role")
+      .from("_users")
+      .select("user_role")
       .eq("id", user.id)
       .single();
 
+    console.log("user data", userData);
+
     if (roleError) throw roleError;
-    if (userData.role !== "admin") {
+    if (userData.user_role !== "admin") {
       throw new Error("Only administrators can update documents");
     }
 

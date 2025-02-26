@@ -179,6 +179,7 @@ export default function ViewAllJudgments() {
                   />
                 </div>
               </div>
+
               <Button
                 variant="outline"
                 onClick={() => setShowFilters(!showFilters)}
