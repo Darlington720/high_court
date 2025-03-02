@@ -434,6 +434,14 @@ function MainLayout({ children }: LayoutProps) {
           name: "Statutory Instruments",
           href: "/statutory-instruments",
         },
+        {
+          name: "Legal Notices",
+          href: "/legal-notices",
+        },
+        {
+          name: "Ordinances",
+          href: "/ordinances",
+        },
       ],
 
       // subcategories: [{ name: "About Educite", href: "/about" }],
@@ -476,6 +484,17 @@ function MainLayout({ children }: LayoutProps) {
           target: "_",
         },
         { name: "Educite Reports", href: "/educite_reports" },
+        { name: "Procedure Documents", href: "/procedure_documnents" },
+        // {
+        //   name: "Procedure Documents",
+        //   divisions: [
+        //     "Civil Procedure",
+        //     "Criminal Procedure",
+        //     "Family Law Practice",
+        //     "⁠Land Transactions",
+        //     "Commercial Law Practice",
+        //   ],
+        // },
         // { name: "Educite Archives", href: "/educite-archives" },
         // { name: "Educite Reports", href: "/educite-reports" },
       ],
@@ -989,11 +1008,9 @@ function MainLayout({ children }: LayoutProps) {
                     Contact
                   </Link>
                 </li>
-
                 <li>
                   <Link
                     to="/open-access-resources"
-                    // target="_"
                     className="text-gray-400 hover:text-white transition-colors duration-200"
                   >
                     Open Access Resources
@@ -1031,7 +1048,19 @@ function MainLayout({ children }: LayoutProps) {
               </div>
             </div>
           </div>
-          <div className="mt-8 border-t border-gray-800 pt-8">
+
+          {/* Logo Section */}
+          <div className="mt-8 flex flex-col items-center border-t border-gray-800 pt-8">
+            <img
+              src={EduciteLogo}
+              alt="Educite Logo"
+              className="w-auto mb-4"
+              style={{
+                backgroundColor: "#fff",
+                borderRadius: 50,
+                height: 100,
+              }}
+            />
             <p className="text-center text-sm text-gray-400">
               © {new Date().getFullYear()} Educite. All rights reserved.
             </p>

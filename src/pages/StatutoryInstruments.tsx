@@ -23,6 +23,7 @@ import { formatDate } from "../lib/utils";
 import { PaymentModal } from "../components/PaymentModal";
 import type { Document } from "../types";
 import AppContext from "../context/AppContext";
+import { toast } from "react-toastify";
 
 export default function StatutoryInstruments() {
   const navigate = useNavigate();
@@ -77,6 +78,15 @@ export default function StatutoryInstruments() {
     } finally {
       // Reset loading state for this file
       setDownloadingFiles((prev) => ({ ...prev, [fileId]: false }));
+    }
+  };
+
+  const handleDocClick = (item: any) => {
+    if (!appContext?.user) {
+      toast.warn("You need to log in to access this document.");
+      navigate("/login");
+    } else {
+      handlePreview(item.file_url);
     }
   };
 
@@ -245,7 +255,13 @@ export default function StatutoryInstruments() {
                               <Scroll className="h-6 w-6 text-blue-600" />
                             </div>
                             <div>
-                              <h3 className="text-lg font-medium text-gray-900">
+                              <h3
+                                className="text-lg font-medium text-gray-900"
+                                style={{
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => handleDocClick(doc)}
+                              >
                                 {doc.title}
                               </h3>
                               <div className="mt-1 flex items-center gap-4 text-sm text-gray-500">

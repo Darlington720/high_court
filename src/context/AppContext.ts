@@ -7,6 +7,10 @@ interface AppContextObj {
   setEditDocModalVisible: (payload: any) => void;
   selectedDocument: any;
   setSelectedDocument: (payload: any) => void;
+  selectedDocumentPreviewVisible: any;
+  setSelectedDocumentPreviewVisible: (payload: any) => void;
+  documentPreview: any;
+  setDocumentPreview: (payload: any) => void;
 }
 
 const AppContext = createContext<AppContextObj | null>(null);

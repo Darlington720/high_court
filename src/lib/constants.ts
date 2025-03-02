@@ -96,6 +96,8 @@ export const DOCUMENT_CATEGORIES = {
     "Tax Appeals Tribunal (Uganda)",
   ],
   "Acts of Parliament": ["Acts of Parliament"],
+  "Legal Notices": ["Legal Notices"],
+  Ordinances: ["Ordinances"],
   "Statutory Instruments": [
     "Statutory Instruments 2001",
     "Statutory Instruments 2002",

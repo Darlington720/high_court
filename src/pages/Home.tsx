@@ -241,8 +241,10 @@ export default function Home() {
     setShowPaymentModal(true);
   };
 
-  const handlePreview = (fileUrl: string) => {
-    window.open(fileUrl, "_blank");
+  const handlePreview = (file: any) => {
+    appContext?.setDocumentPreview(file);
+    appContext?.setSelectedDocumentPreviewVisible(true);
+    // window.open(fileUrl, "_blank");
   };
 
   const [downloadingFiles, setDownloadingFiles] = useState({});
@@ -327,7 +329,7 @@ export default function Home() {
       toast.warn("You need to log in to access this document.");
       navigate("/login");
     } else {
-      handlePreview(item.file_url);
+      handlePreview(item);
     }
   };
 
@@ -359,11 +361,10 @@ export default function Home() {
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mx-auto max-w-2xl text-center">
               <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
-                Access to Legal Information made Simple
+                Welcome to <br /> Educite Virtual Library
               </h1>
               <p className="mt-6 text-lg leading-8 text-blue-100">
-                Search through thousands of legal documents, court records, and
-                parliamentary proceedings.
+                Instantly search through thousands of document.
               </p>
 
               {/* Search Bar */}
@@ -547,7 +548,7 @@ export default function Home() {
                     <div className="flex space-x-4 mt-2">
                       <span
                         className="text-xs text-blue-600 cursor-pointer hover:underline"
-                        onClick={() => handlePreview(item.file_url)}
+                        onClick={() => handlePreview(item)}
                       >
                         Preview
                       </span>
@@ -609,7 +610,7 @@ export default function Home() {
                     <div className="flex space-x-4 mt-2">
                       <span
                         className="text-xs text-blue-600 cursor-pointer hover:underline"
-                        onClick={() => handlePreview(item.file_url)}
+                        onClick={() => handlePreview(item)}
                       >
                         Preview
                       </span>
@@ -671,7 +672,7 @@ export default function Home() {
                     <div className="flex space-x-4 mt-2">
                       <span
                         className="text-xs text-blue-600 cursor-pointer hover:underline"
-                        onClick={() => handlePreview(item.file_url)}
+                        onClick={() => handlePreview(item)}
                       >
                         Preview
                       </span>
@@ -733,7 +734,7 @@ export default function Home() {
                     <div className="flex space-x-4 mt-2">
                       <span
                         className="text-xs text-blue-600 cursor-pointer hover:underline"
-                        onClick={() => handlePreview(item.file_url)}
+                        onClick={() => handlePreview(item)}
                       >
                         Preview
                       </span>
@@ -757,7 +758,7 @@ export default function Home() {
       </div>
 
       {/* Subscription Packages */}
-      <div className="bg-gradient-to-b from-gray-50 to-white py-24 sm:py-32">
+      <div className="bg-gradient-to-b from-gray-50 to-white py-24 sm:py-16">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
@@ -877,7 +878,7 @@ export default function Home() {
       )}
 
       {/* Features Section */}
-      <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
+      {/* <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
             Everything you need to manage your Legal documents
@@ -911,7 +912,7 @@ export default function Home() {
             />
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

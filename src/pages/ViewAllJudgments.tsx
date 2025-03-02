@@ -22,6 +22,7 @@ import { formatDate } from "../lib/utils";
 import { PaymentModal } from "../components/PaymentModal";
 import type { Document } from "../types";
 import AppContext from "../context/AppContext";
+import { toast } from "react-toastify";
 
 export default function ViewAllJudgments() {
   const navigate = useNavigate();
@@ -48,8 +49,14 @@ export default function ViewAllJudgments() {
 
   // console.log("court", court);
 
-  const handlePreview = (fileUrl: string) => {
-    window.open(fileUrl, "_blank");
+  // const handlePreview = (fileUrl: string) => {
+  //   window.open(fileUrl, "_blank");
+  // };
+
+  const handlePreview = (file: any) => {
+    appContext?.setDocumentPreview(file);
+    appContext?.setSelectedDocumentPreviewVisible(true);
+    // window.open(fileUrl, "_blank");
   };
 
   const handleDownload = async (fileUrl, fileName, fileId) => {
@@ -81,6 +88,15 @@ export default function ViewAllJudgments() {
     } finally {
       // Reset loading state for this file
       setDownloadingFiles((prev) => ({ ...prev, [fileId]: false }));
+    }
+  };
+
+  const handleDocClick = (item: any) => {
+    if (!appContext?.user) {
+      toast.warn("You need to log in to access this document.");
+      navigate("/login");
+    } else {
+      handlePreview(item);
     }
   };
 
@@ -291,7 +307,13 @@ export default function ViewAllJudgments() {
                               <Gavel className="h-6 w-6 text-blue-600" />
                             </div>
                             <div>
-                              <h3 className="text-lg font-medium text-gray-900">
+                              <h3
+                                className="text-lg font-medium text-gray-900"
+                                style={{
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => handleDocClick(doc)}
+                              >
                                 {doc.title}
                               </h3>
                               <div className="mt-1 flex items-center gap-4 text-sm text-gray-500">
@@ -319,7 +341,7 @@ export default function ViewAllJudgments() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => handlePreview(doc.file_url)}
+                                onClick={() => handlePreview(doc)}
                               >
                                 <Eye className="h-4 w-4" />
                               </Button>

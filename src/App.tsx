@@ -50,11 +50,18 @@ import ViewArchivalMaterials from "./pages/dashboard/ViewArchivalMaterials";
 import EduciteReports from "./pages/EduciteReports";
 import ScrollToTop from "./components/ScrollToTop";
 import ViewCourtsOfRecord from "./pages/dashboard/ViewCourtsOfRecord";
+import DocumentPreview from "./components/DocumentPreview";
 
 function App() {
   const [user, setUser] = useState(null);
   const [editDocModalVisible, setEditDocModalVisible] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState(false);
+  const [selectedDocumentPreviewVisible, setSelectedDocumentPreviewVisible] =
+    useState(false);
+  const [documentPreview, setDocumentPreview] = useState(null);
+
+  // console.log("selectedDocumentPreviewVisible", selectedDocumentPreviewVisible);
+  // console.log("documentPreview", documentPreview);
 
   return (
     <AppContext.Provider
@@ -65,9 +72,24 @@ function App() {
         setEditDocModalVisible,
         selectedDocument,
         setSelectedDocument,
+        selectedDocumentPreviewVisible,
+        setSelectedDocumentPreviewVisible,
+        documentPreview,
+        setDocumentPreview,
       }}
     >
+      {selectedDocumentPreviewVisible && (
+        <DocumentPreview
+          documentUrl={documentPreview.file_url}
+          documentDetails={{
+            title: documentPreview.title,
+            description: documentPreview.subcategory,
+          }}
+          onClose={() => setSelectedDocumentPreviewVisible(false)}
+        />
+      )}
       <ToastContainer position="top-center" autoClose={3000} />
+
       <ErrorBoundary>
         <Router>
           <Layout>
@@ -211,6 +233,7 @@ function App() {
                 <Route path="/educite_reports" element={<EduciteReports />} />
                 <Route path="/legislation" element={<ViewAllLegislation />} />
                 <Route path="/hansards/:year" element={<ViewAllHansards />} />
+                <Route path="/hansards" element={<ViewAllHansards />} />
                 <Route path="/gazettes" element={<ViewAllGazettes />} />
                 <Route
                   path="/open-access-resources"

@@ -24,6 +24,7 @@ import { formatDate } from "../lib/utils";
 import { PaymentModal } from "../components/PaymentModal";
 import type { Document } from "../types";
 import AppContext from "../context/AppContext";
+import { toast } from "react-toastify";
 
 export default function ViewAllHansards() {
   const navigate = useNavigate();
@@ -47,8 +48,14 @@ export default function ViewAllHansards() {
   const appContext = useContext(AppContext);
   const [downloadingFiles, setDownloadingFiles] = useState({});
 
-  const handlePreview = (fileUrl: string) => {
-    window.open(fileUrl, "_blank");
+  // const handlePreview = (fileUrl: string) => {
+  //   window.open(fileUrl, "_blank");
+  // };
+
+  const handlePreview = (file: any) => {
+    appContext?.setDocumentPreview(file);
+    appContext?.setSelectedDocumentPreviewVisible(true);
+    // window.open(fileUrl, "_blank");
   };
 
   const handleDownload = async (fileUrl, fileName, fileId) => {
@@ -83,6 +90,15 @@ export default function ViewAllHansards() {
     }
   };
 
+  const handleDocClick = (item: any) => {
+    if (!appContext?.user) {
+      toast.warn("You need to log in to access this document.");
+      navigate("/login");
+    } else {
+      handlePreview(item);
+    }
+  };
+
   useEffect(() => {
     loadDocuments();
   }, [year]);
@@ -92,7 +108,7 @@ export default function ViewAllHansards() {
     setError(null);
     try {
       const data = await fetchDocuments(
-        { category: "Hansards", subcategory: `Hansards ${year}` },
+        { category: "Hansards", subcategory: year ? `Hansards ${year}` : null },
         { field: "created_at", direction: "desc" }
       );
       setDocuments(data);
@@ -269,7 +285,13 @@ export default function ViewAllHansards() {
                               <BookOpen className="h-6 w-6 text-blue-600" />
                             </div>
                             <div>
-                              <h3 className="text-lg font-medium text-gray-900">
+                              <h3
+                                className="text-lg font-medium text-gray-900"
+                                style={{
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => handleDocClick(doc)}
+                              >
                                 {doc.title}
                               </h3>
                               <div className="mt-1 flex items-center gap-4 text-sm text-gray-500">
@@ -299,7 +321,7 @@ export default function ViewAllHansards() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => handlePreview(doc.file_url)}
+                                onClick={() => handlePreview(doc)}
                               >
                                 <Eye className="h-4 w-4" />
                               </Button>
