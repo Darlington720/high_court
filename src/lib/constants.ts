@@ -98,6 +98,13 @@ export const DOCUMENT_CATEGORIES = {
   "Acts of Parliament": ["Acts of Parliament"],
   "Legal Notices": ["Legal Notices"],
   Ordinances: ["Ordinances"],
+  "Procedure Documents": [
+    "Civil Procedure",
+    "Criminal Procedure",
+    "Family Law Practice",
+    "Land Transactions",
+    "Commercial Law Practice",
+  ],
   "Statutory Instruments": [
     "Statutory Instruments 2001",
     "Statutory Instruments 2002",

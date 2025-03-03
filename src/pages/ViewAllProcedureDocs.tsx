@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
-  Scroll,
+  Gavel,
   Search,
   Filter,
   Download,
@@ -14,7 +14,6 @@ import {
   Lock,
   ChevronRight,
   ChevronLeft,
-  FileText,
   Loader,
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
@@ -25,25 +24,30 @@ import type { Document } from "../types";
 import AppContext from "../context/AppContext";
 import { toast } from "react-toastify";
 
-export default function ViewAllLegislation() {
+export default function ViewAllProcedureDocs() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const subcategory = searchParams.get("subcategory");
+  const appContext = useContext(AppContext);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
-    type: "",
+    court: "",
     year: "",
-    status: "",
+    judge: "",
+    caseType: "",
   });
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const appContext = useContext(AppContext);
   const [downloadingFiles, setDownloadingFiles] = useState({});
+
+  // console.log("court", court);
 
   // const handlePreview = (fileUrl: string) => {
   //   window.open(fileUrl, "_blank");
@@ -89,37 +93,6 @@ export default function ViewAllLegislation() {
     }
   };
 
-  useEffect(() => {
-    loadDocuments();
-  }, []);
-
-  const loadDocuments = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await fetchDocuments(
-        { category: "Acts of Parliament" },
-        { field: "created_at", direction: "desc" }
-      );
-      setDocuments(data);
-    } catch (err) {
-      setError("Failed to load legislation. Please try again.");
-      console.error("Error loading legislation:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const _handleDownload = (doc: Document) => {
-    setShowPaymentModal(true);
-    setSelectedPlan({
-      name: "Bronze",
-      price: 10,
-      duration: "1 Day",
-      features: ["Document Downloads", "Basic Search", "24/7 Support"],
-    });
-  };
-
   const handleDocClick = (item: any) => {
     if (!appContext?.user) {
       toast.warn("You need to log in to access this document.");
@@ -129,6 +102,39 @@ export default function ViewAllLegislation() {
     }
   };
 
+  useEffect(() => {
+    loadDocuments();
+  }, [subcategory]);
+
+  const loadDocuments = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await fetchDocuments(
+        { category: "Procedure Documents", subcategory: subcategory },
+        { field: "created_at", direction: "desc" }
+      );
+
+      setDocuments(data);
+    } catch (err) {
+      setError("Failed to load judgments. Please try again.");
+      console.error("Error loading judgments:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const _handleDownload = (doc: Document) => {
+    // Show payment modal if user is not subscribed
+    setShowPaymentModal(true);
+    setSelectedPlan({
+      name: "Bronze",
+      price: 10,
+      duration: "1 Day",
+      features: ["Document Downloads", "Basic Search", "24/7 Support"],
+    });
+  };
+
   const filteredDocuments = documents.filter((doc) => {
     const matchesSearch =
       doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -136,12 +142,23 @@ export default function ViewAllLegislation() {
         k.toLowerCase().includes(searchTerm.toLowerCase())
       );
 
-    const matchesType = !filters.type || doc.metadata.type === filters.type;
+    const matchesCourt =
+      !filters.court ||
+      doc.subcategory === filters.court ||
+      doc.category === filters.court;
     const matchesYear = !filters.year || doc.created_at.includes(filters.year);
-    const matchesStatus =
-      !filters.status || doc.metadata.status === filters.status;
+    const matchesJudge =
+      !filters.judge || doc.metadata.judge?.includes(filters.judge);
+    const matchesCaseType =
+      !filters.caseType || doc.metadata.caseType === filters.caseType;
 
-    return matchesSearch && matchesType && matchesYear && matchesStatus;
+    return (
+      matchesSearch &&
+      matchesCourt &&
+      matchesYear &&
+      matchesJudge &&
+      matchesCaseType
+    );
   });
 
   // Pagination
@@ -158,11 +175,10 @@ export default function ViewAllLegislation() {
           {/* Header */}
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              Recent Legislation
+              Recent Procedure Documents
             </h1>
             <p className="mt-2 text-lg text-gray-600">
-              Browse and search through recent Acts of Parliament and
-              legislative documents
+              Browse and search through recent Procedure Documents
             </p>
           </div>
 
@@ -176,11 +192,12 @@ export default function ViewAllLegislation() {
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search legislation..."
+                    placeholder="Search Procedure Documents..."
                     className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
               </div>
+
               <Button
                 variant="outline"
                 onClick={() => setShowFilters(!showFilters)}
@@ -192,22 +209,29 @@ export default function ViewAllLegislation() {
             </div>
 
             {showFilters && (
-              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Type
+                    Court
                   </label>
                   <select
-                    value={filters.type}
+                    value={filters.court}
                     onChange={(e) =>
-                      setFilters({ ...filters, type: e.target.value })
+                      setFilters({ ...filters, court: e.target.value })
                     }
                     className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   >
-                    <option value="">All Types</option>
-                    <option value="act">Act</option>
-                    <option value="bill">Bill</option>
-                    <option value="amendment">Amendment</option>
+                    <option value="">All Courts</option>
+                    <option value="Supreme Court of Uganda">
+                      Supreme Court
+                    </option>
+                    <option value="Court of Appeal of Uganda">
+                      Court of Appeal
+                    </option>
+                    <option value="Constitutional Court of Uganda">
+                      Constitutional Court
+                    </option>
+                    <option value="Courts of Record">High Court</option>
                   </select>
                 </div>
                 <div>
@@ -234,19 +258,20 @@ export default function ViewAllLegislation() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Status
+                    Case Type
                   </label>
                   <select
-                    value={filters.status}
+                    value={filters.caseType}
                     onChange={(e) =>
-                      setFilters({ ...filters, status: e.target.value })
+                      setFilters({ ...filters, caseType: e.target.value })
                     }
                     className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   >
-                    <option value="">All Statuses</option>
-                    <option value="active">In Force</option>
-                    <option value="pending">Pending</option>
-                    <option value="repealed">Repealed</option>
+                    <option value="">All Types</option>
+                    <option value="civil">Civil</option>
+                    <option value="criminal">Criminal</option>
+                    <option value="constitutional">Constitutional</option>
+                    <option value="commercial">Commercial</option>
                   </select>
                 </div>
               </div>
@@ -257,7 +282,7 @@ export default function ViewAllLegislation() {
           {loading ? (
             <div className="text-center py-12">
               <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-              <p className="mt-4 text-gray-600">Loading legislation...</p>
+              <p className="mt-4 text-gray-600">Loading judgments...</p>
             </div>
           ) : error ? (
             <div className="bg-red-50 p-4 rounded-lg">
@@ -281,7 +306,7 @@ export default function ViewAllLegislation() {
                         <div className="flex-1">
                           <div className="flex items-center gap-4">
                             <div className="rounded-lg bg-blue-50 p-2">
-                              <Scroll className="h-6 w-6 text-blue-600" />
+                              <Gavel className="h-6 w-6 text-blue-600" />
                             </div>
                             <div>
                               <h3
@@ -295,17 +320,17 @@ export default function ViewAllLegislation() {
                               </h3>
                               <div className="mt-1 flex items-center gap-4 text-sm text-gray-500">
                                 <span className="flex items-center">
-                                  <FileText className="mr-1.5 h-4 w-4" />
-                                  {doc.metadata.type || "Act"}
+                                  <Building2 className="mr-1.5 h-4 w-4" />
+                                  {doc.subcategory}
                                 </span>
                                 <span className="flex items-center">
                                   <Calendar className="mr-1.5 h-4 w-4" />
                                   {formatDate(doc.created_at)}
                                 </span>
-                                {doc.metadata.actNumber && (
+                                {doc.metadata.caseNumber && (
                                   <span className="flex items-center">
                                     <Tag className="mr-1.5 h-4 w-4" />
-                                    Act No. {doc.metadata.actNumber}
+                                    {doc.metadata.caseNumber}
                                   </span>
                                 )}
                               </div>
@@ -322,13 +347,6 @@ export default function ViewAllLegislation() {
                               >
                                 <Eye className="h-4 w-4" />
                               </Button>
-                              {/* <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDownload(doc)}
-                          >
-                            <Lock className="h-4 w-4" />
-                          </Button> */}
 
                               <Button
                                 variant="ghost"
@@ -395,7 +413,7 @@ export default function ViewAllLegislation() {
                         Get Full Access
                       </h3>
                       <p className="mt-2 text-blue-200">
-                        Subscribe to download legislation and access premium
+                        Subscribe to download judgments and access premium
                         features
                       </p>
                     </div>

@@ -130,6 +130,17 @@ function DashboardLayout({ children }: LayoutProps) {
       ],
     },
     {
+      name: "System Reports",
+      items: [
+        {
+          name: "System Reports Dashbord",
+          href: "/dashboard/system_reports",
+          icon: FileArchive,
+        },
+        // { name: "Add User", href: "/dashboard/users/add", icon: Plus },
+      ],
+    },
+    {
       name: "User Management",
       items: [
         { name: "View Users", href: "/dashboard/users", icon: Users },
@@ -475,6 +486,7 @@ function MainLayout({ children }: LayoutProps) {
     },
     others: {
       title: "Others",
+
       subcategories: [
         { name: "About Educite", href: "/about" },
         // { name: "Partners", href: "/partners" },
@@ -483,18 +495,19 @@ function MainLayout({ children }: LayoutProps) {
           href: "/open-access-resources",
           target: "_",
         },
+
         { name: "Educite Reports", href: "/educite_reports" },
-        { name: "Procedure Documents", href: "/procedure_documnents" },
-        // {
-        //   name: "Procedure Documents",
-        //   divisions: [
-        //     "Civil Procedure",
-        //     "Criminal Procedure",
-        //     "Family Law Practice",
-        //     "⁠Land Transactions",
-        //     "Commercial Law Practice",
-        //   ],
-        // },
+
+        {
+          name: "Procedure Documents",
+          divisions: [
+            "Civil Procedure",
+            "Criminal Procedure",
+            "Family Law Practice",
+            "⁠Land Transactions",
+            "Commercial Law Practice",
+          ],
+        },
         // { name: "Educite Archives", href: "/educite-archives" },
         // { name: "Educite Reports", href: "/educite-reports" },
       ],
@@ -652,18 +665,49 @@ function MainLayout({ children }: LayoutProps) {
                             // Others menu with links
                             <div className="col-span-2 grid grid-cols-auto gap-2">
                               {item.subcategories.map((subcategory) => (
-                                <Link
+                                <div
                                   key={subcategory.name}
-                                  to={subcategory.href}
-                                  // target={
-                                  //   subcategory.name == "Open Access Resources"
-                                  //     ? "_blank"
-                                  //     : "_self"
-                                  // }
-                                  className="text-gray-700 hover:text-blue-600 hover:bg-blue-100/50 px-3 py-2 rounded-lg transition-all duration-200 text-sm"
+                                  className="space-y-2"
                                 >
-                                  {subcategory.name}
-                                </Link>
+                                  {subcategory.name == "Procedure Documents" ? (
+                                    <>
+                                      <div className="font-medium text-gray-900 px-3 py-2">
+                                        {subcategory.name}
+                                      </div>
+                                      <div className="pl-4 space-y-1">
+                                        {subcategory.divisions.map(
+                                          (division) => (
+                                            <Link
+                                              key={division}
+                                              // to={`/judgments?court=${encodeURIComponent(
+                                              //   subcategory.name
+                                              // )}&division=${encodeURIComponent(
+                                              //   division
+                                              // )}`}
+                                              to={`/procedure_documents?subcategory=${subcategory.name}/${division}`}
+                                              className="block text-gray-700 hover:text-blue-600 hover:bg-blue-100/50 px-3 py-2 rounded-lg transition-all duration-200 text-sm"
+                                            >
+                                              {division}
+                                            </Link>
+                                          )
+                                        )}
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <Link
+                                      key={subcategory.name}
+                                      to={subcategory.href}
+                                      // target={
+                                      //   subcategory.name == "Open Access Resources"
+                                      //     ? "_blank"
+                                      //     : "_self"
+                                      // }
+                                      className="text-gray-700 hover:text-blue-600 hover:bg-blue-100/50 px-3 py-2 rounded-lg transition-all duration-200 text-sm"
+                                    >
+                                      {subcategory.name}
+                                    </Link>
+                                  )}
+                                </div>
                               ))}
                             </div>
                           ) : (
@@ -672,7 +716,7 @@ function MainLayout({ children }: LayoutProps) {
                               {item.subcategories.map((subcategory) => (
                                 <Link
                                   key={subcategory}
-                                  to={`/documents?category=${key}&subcategory=${encodeURIComponent(
+                                  to={`/procedure_documents?category=${key}&subcategory=${encodeURIComponent(
                                     subcategory
                                   )}`}
                                   className="text-gray-700 hover:text-blue-600 hover:bg-blue-100/50 px-3 py-2 rounded-lg transition-all duration-200 text-sm"
@@ -873,14 +917,40 @@ function MainLayout({ children }: LayoutProps) {
                           key == "gazettes" ||
                           key == "archival"
                         ? item.subcategories.map((subcategory) => (
-                            <Link
-                              key={subcategory.name}
-                              to={subcategory.href}
-                              onClick={() => setMobileMenuOpen(false)}
-                              className="block text-gray-300 hover:text-white hover:bg-gray-800 px-3 py-2 rounded-md transition-all duration-200"
-                            >
-                              {subcategory.name}
-                            </Link>
+                            <div key={subcategory.name} className="space-y-2">
+                              {subcategory.name == "Procedure Documents" ? (
+                                <>
+                                  <div className="text-gray-400 px-3 py-2">
+                                    {subcategory.name}
+                                  </div>
+                                  <div className="pl-4 space-y-1">
+                                    {subcategory.divisions.map((division) => (
+                                      <Link
+                                        key={division}
+                                        to={`/procedure_documents?subcategory=${encodeURIComponent(
+                                          subcategory.name
+                                        )}&division=${encodeURIComponent(
+                                          division
+                                        )}`}
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="block text-gray-300 hover:text-white hover:bg-gray-800 px-3 py-2 rounded-md transition-all duration-200"
+                                      >
+                                        {division}
+                                      </Link>
+                                    ))}
+                                  </div>
+                                </>
+                              ) : (
+                                <Link
+                                  key={subcategory.name}
+                                  to={subcategory.href}
+                                  onClick={() => setMobileMenuOpen(false)}
+                                  className="block text-gray-300 hover:text-white hover:bg-gray-800 px-3 py-2 rounded-md transition-all duration-200"
+                                >
+                                  {subcategory.name}
+                                </Link>
+                              )}
+                            </div>
                           ))
                         : item.subcategories.map((subcategory) => (
                             <Link

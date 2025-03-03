@@ -27,7 +27,7 @@ import type { Document } from "../types";
 import { Button } from "../components/ui/Button";
 import { SearchResults } from "../components/SearchResults";
 import { PaymentModal } from "../components/PaymentModal";
-import { fetchDocuments } from "../lib/documents";
+import { fetchDocuments, saveDocumentDownload } from "../lib/documents";
 import { FilePreview } from "../components/ui/FilePreview";
 import AppContext from "../context/AppContext";
 import { supabase } from "../lib/supabase";
@@ -264,6 +264,8 @@ export default function Home() {
       if (!response.ok) {
         throw new Error(`Failed to fetch file: ${response.statusText}`);
       }
+
+      await saveDocumentDownload(appContext?.user?.id, fileId);
 
       const blob = await response.blob();
       const link = document.createElement("a");

@@ -51,6 +51,10 @@ import EduciteReports from "./pages/EduciteReports";
 import ScrollToTop from "./components/ScrollToTop";
 import ViewCourtsOfRecord from "./pages/dashboard/ViewCourtsOfRecord";
 import DocumentPreview from "./components/DocumentPreview";
+import Statistics from "./pages/dashboard/Statistics";
+import ViewAllLegalNotices from "./pages/ViewAllLegalNotices";
+import ViewAllOrdinances from "./pages/ViewAllOrdinances";
+import ViewAllProcedureDocs from "./pages/ViewAllProcedureDocs";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -82,6 +86,7 @@ function App() {
         <DocumentPreview
           documentUrl={documentPreview.file_url}
           documentDetails={{
+            id: documentPreview.id,
             title: documentPreview.title,
             description: documentPreview.subcategory,
           }}
@@ -209,6 +214,10 @@ function App() {
                   path="/dashboard/content/pages"
                   element={<ManagePages />}
                 />
+                <Route
+                  path="/dashboard/system_reports"
+                  element={<Statistics />}
+                />
                 <Route path="/dashboard/content/blog" element={<BlogPosts />} />
                 <Route
                   path="/dashboard/content/testimonials"
@@ -223,6 +232,10 @@ function App() {
                 {/* Public View All Routes */}
                 <Route path="/judgments" element={<ViewAllJudgments />} />
                 <Route
+                  path="/procedure_documents"
+                  element={<ViewAllProcedureDocs />}
+                />
+                <Route
                   path="/statutory-instruments"
                   element={<StatutoryInstruments />}
                 />
@@ -232,6 +245,11 @@ function App() {
                 />
                 <Route path="/educite_reports" element={<EduciteReports />} />
                 <Route path="/legislation" element={<ViewAllLegislation />} />
+                <Route
+                  path="/legal-notices"
+                  element={<ViewAllLegalNotices />}
+                />
+                <Route path="/ordinances" element={<ViewAllOrdinances />} />
                 <Route path="/hansards/:year" element={<ViewAllHansards />} />
                 <Route path="/hansards" element={<ViewAllHansards />} />
                 <Route path="/gazettes" element={<ViewAllGazettes />} />

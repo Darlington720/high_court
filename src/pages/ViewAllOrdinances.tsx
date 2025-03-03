@@ -25,7 +25,7 @@ import type { Document } from "../types";
 import AppContext from "../context/AppContext";
 import { toast } from "react-toastify";
 
-export default function ViewAllLegislation() {
+export default function ViewAllOrdinances() {
   const navigate = useNavigate();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
@@ -98,7 +98,7 @@ export default function ViewAllLegislation() {
     setError(null);
     try {
       const data = await fetchDocuments(
-        { category: "Acts of Parliament" },
+        { category: "Ordinances" },
         { field: "created_at", direction: "desc" }
       );
       setDocuments(data);
@@ -158,11 +158,10 @@ export default function ViewAllLegislation() {
           {/* Header */}
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              Recent Legislation
+              Recent Ordinances
             </h1>
             <p className="mt-2 text-lg text-gray-600">
-              Browse and search through recent Acts of Parliament and
-              legislative documents
+              Browse and search through recent Ordinances
             </p>
           </div>
 
@@ -176,7 +175,7 @@ export default function ViewAllLegislation() {
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search legislation..."
+                    placeholder="Search Ordinances..."
                     className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>

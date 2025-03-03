@@ -29,6 +29,9 @@ export async function uploadDocument(
       Gazettes: "gazettes",
       "7th Revised Edition": "revised",
       "Archival Materials": "archival_materials",
+      "Procedure Documents": "procedure_documents",
+      "Legal Notices": "legal_notices",
+      Ordinances: "ordinances",
     };
 
     const bucketId = bucketMap[category];
@@ -344,6 +347,19 @@ export async function updateDocument(id: string, updates: Partial<Document>) {
   } catch (error) {
     console.error("Error updating document:", error);
     throw error;
+  }
+}
+
+export async function saveDocumentDownload(user_id: any, document_id: any) {
+  const { data, error } = await supabase.from("downloads").insert([
+    {
+      user_id: user_id,
+      document_id: document_id,
+    },
+  ]);
+
+  if (error) {
+    console.error("Error saving document download:", error);
   }
 }
 

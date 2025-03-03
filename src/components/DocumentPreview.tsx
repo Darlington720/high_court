@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Worker } from "@react-pdf-viewer/core";
 import { Viewer } from "@react-pdf-viewer/core";
 import { toolbarPlugin } from "@react-pdf-viewer/toolbar";
@@ -6,6 +6,7 @@ import { Modal, Alert, Button, Typography } from "antd";
 import AppContext from "../context/AppContext";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/toolbar/lib/styles/index.css";
+import { supabase } from "../lib/supabase";
 
 function DocumentPreview({
   documentUrl,
@@ -16,13 +17,65 @@ function DocumentPreview({
 }) {
   const appContext = useContext(AppContext);
   const [loadError, setLoadError] = useState(false);
+  const hasSavedView = useRef(false);
+
+  //   console.log(appContext?.user);
 
   // Initialize toolbar plugin
   const toolbarPluginInstance = toolbarPlugin();
-  const { Toolbar } = toolbarPluginInstance;
+  const { Toolbar, renderDefaultToolbar } = toolbarPluginInstance;
+
+  const transform = (slot) => {
+    const { Download, NumberOfPages } = slot;
+    return Object.assign({}, slot, {
+      Download: () => (
+        <button
+          onClick={() => {
+            saveDocumentDownload(); // Log the download event
+            // Download?.onClick(); // Trigger actual download
+          }}
+        >
+          <Download />
+        </button>
+      ),
+    });
+  };
 
   // Function to check if the file is a PDF
   const isValidPDF = (url: string) => url.toLowerCase().endsWith(".pdf");
+
+  const saveDocumentView = async () => {
+    const { data: documentViewData, error: documentViewErr } = await supabase
+      .from("document_views")
+      .insert([
+        { user_id: appContext?.user?.id, document_id: documentDetails.id },
+      ])
+      .select();
+
+    if (documentViewErr) {
+      console.error("Error saving document view", documentViewErr);
+    }
+  };
+
+  const saveDocumentDownload = async () => {
+    const { data, error } = await supabase.from("downloads").insert([
+      {
+        user_id: appContext?.user?.id,
+        document_id: documentDetails.id,
+      },
+    ]);
+
+    if (error) {
+      console.error("Error saving document download:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (!hasSavedView.current) {
+      saveDocumentView();
+      hasSavedView.current = true;
+    }
+  }, [documentUrl]);
 
   return (
     <Modal
@@ -62,7 +115,8 @@ function DocumentPreview({
           <>
             {/* Toolbar for PDF Controls */}
             <div className="w-full border p-2 bg-gray-100 rounded-lg">
-              <Toolbar />
+              {/* <Toolbar /> */}
+              <Toolbar>{renderDefaultToolbar(transform)}</Toolbar>
             </div>
 
             {/* PDF Viewer */}

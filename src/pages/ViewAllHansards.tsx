@@ -19,7 +19,7 @@ import {
   Loader,
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
-import { fetchDocuments } from "../lib/documents";
+import { fetchDocuments, saveDocumentDownload } from "../lib/documents";
 import { formatDate } from "../lib/utils";
 import { PaymentModal } from "../components/PaymentModal";
 import type { Document } from "../types";
@@ -73,6 +73,8 @@ export default function ViewAllHansards() {
       if (!response.ok) {
         throw new Error(`Failed to fetch file: ${response.statusText}`);
       }
+
+      await saveDocumentDownload(appContext?.user?.id, fileId);
 
       const blob = await response.blob();
       const link = document.createElement("a");

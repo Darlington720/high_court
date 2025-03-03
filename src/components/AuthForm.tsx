@@ -52,6 +52,17 @@ export default function AuthForm({ mode }: AuthFormProps) {
         const user = { ...data?.user, ..._data[0] };
         appContext?.setUser(user);
 
+        // store the user login
+
+        const { data: userLoginData, error: userLoginErr } = await supabase
+          .from("user_logins")
+          .insert([{ user_id: data?.user?.id }])
+          .select();
+
+        if (userLoginErr) {
+          throw new Error(userLoginErr.message);
+        }
+
         if (user.user_role == "admin") {
           navigate("/dashboard");
         } else {
