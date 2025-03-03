@@ -883,6 +883,7 @@ function MainLayout({ children }: LayoutProps) {
                                 to={`/judgments?court=${encodeURIComponent(
                                   subcategory
                                 )}`}
+                                // to={`/judgments?court=${subcategory.name}/${division}`}
                                 onClick={() => setMobileMenuOpen(false)}
                                 className="block text-gray-300 hover:text-white hover:bg-gray-800 px-3 py-2 rounded-md transition-all duration-200"
                               >
@@ -897,11 +898,12 @@ function MainLayout({ children }: LayoutProps) {
                                   {subcategory.divisions.map((division) => (
                                     <Link
                                       key={division}
-                                      to={`/judgments?court=${encodeURIComponent(
-                                        subcategory.name
-                                      )}&division=${encodeURIComponent(
-                                        division
-                                      )}`}
+                                      // to={`/judgments?court=${encodeURIComponent(
+                                      //   subcategory.name
+                                      // )}&division=${encodeURIComponent(
+                                      //   division
+                                      // )}`}
+                                      to={`/judgments?court=${subcategory.name}/${division}`}
                                       onClick={() => setMobileMenuOpen(false)}
                                       className="block text-gray-300 hover:text-white hover:bg-gray-800 px-3 py-2 rounded-md transition-all duration-200"
                                     >
