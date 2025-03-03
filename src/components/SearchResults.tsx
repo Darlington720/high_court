@@ -22,18 +22,25 @@ export function SearchResults({ results }: SearchResultsProps) {
   const navigate = useNavigate();
   const appContext = useContext(AppContext);
 
-  const handlePreview = (fileUrl: string) => {
-    window.open(fileUrl, "_blank");
+  // const handlePreview = (fileUrl: string) => {
+  //   window.open(fileUrl, "_blank");
+  // };
+
+  const handlePreview = (file: any) => {
+    appContext?.setDocumentPreview(file);
+    appContext?.setSelectedDocumentPreviewVisible(true);
+    // window.open(fileUrl, "_blank");
   };
 
   const handleDownload = (doc: any) => {
-    console.log(doc);
-    const link = document.createElement("a");
-    link.href = doc.file_url;
-    link.setAttribute("download", doc.title); // Suggests a filename
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // console.log(doc);
+    // const link = document.createElement("a");
+    // link.href = doc.file_url;
+    // link.setAttribute("download", doc.title); // Suggests a filename
+    // document.body.appendChild(link);
+    // link.click();
+    // document.body.removeChild(link);
+    window.open(doc.file_url, "_blank");
   };
 
   const handleDocClick = (item: any) => {
@@ -41,7 +48,7 @@ export function SearchResults({ results }: SearchResultsProps) {
       toast.warn("You need to log in to access this document.");
       navigate("/login");
     } else {
-      handlePreview(item.file_url);
+      handlePreview(item);
     }
   };
 
@@ -128,7 +135,7 @@ export function SearchResults({ results }: SearchResultsProps) {
                           <Button variant="ghost" size="sm">
                             <ExternalLink
                               className="h-4 w-4"
-                              onClick={() => handlePreview(result.file_url)}
+                              onClick={() => handlePreview(result)}
                             />
                           </Button>
                         </div>
