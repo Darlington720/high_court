@@ -366,7 +366,7 @@ export default function Home() {
                 Welcome to <br /> Educite Virtual Library
               </h1>
               <p className="mt-6 text-lg leading-8 text-blue-100">
-                Instantly search through thousands of document.
+                Instantly search through thousands of documents.
               </p>
 
               {/* Search Bar */}

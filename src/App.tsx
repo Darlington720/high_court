@@ -55,6 +55,7 @@ import Statistics from "./pages/dashboard/Statistics";
 import ViewAllLegalNotices from "./pages/ViewAllLegalNotices";
 import ViewAllOrdinances from "./pages/ViewAllOrdinances";
 import ViewAllProcedureDocs from "./pages/ViewAllProcedureDocs";
+import UserDetails from "./pages/dashboard/UserDetails";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -217,6 +218,11 @@ function App() {
                 <Route
                   path="/dashboard/system_reports"
                   element={<Statistics />}
+                />
+
+                <Route
+                  path="/dashboard/user/:userId"
+                  element={<UserDetails />}
                 />
                 <Route path="/dashboard/content/blog" element={<BlogPosts />} />
                 <Route

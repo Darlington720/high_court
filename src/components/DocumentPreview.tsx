@@ -106,7 +106,14 @@ function DocumentPreview({
               showIcon
             />
             <div className="text-center mt-4">
-              <Button type="primary" href={documentUrl} download>
+              <Button
+                type="primary"
+                href={documentUrl}
+                download
+                onClick={() => {
+                  saveDocumentDownload();
+                }}
+              >
                 Download Document
               </Button>
             </div>

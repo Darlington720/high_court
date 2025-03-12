@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   Download,
@@ -56,6 +56,7 @@ const { TabPane } = Tabs;
 const { Option } = Select;
 
 const Statistics = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
   const [dateRange, setDateRange] = useState([null, null]);
   const [chartType, setChartType] = useState("bar");
@@ -73,9 +74,16 @@ const Statistics = () => {
       setLoading(true);
       try {
         // Fetch downloads data
+        // const { data: downloadsData, error: downloadsError } = await supabase
+        //   .from("downloads")
+        //   .select("*")
         const { data: downloadsData, error: downloadsError } = await supabase
           .from("downloads")
-          .select("*");
+          .select("*")
+          .gte(
+            "created_at",
+            new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+          );
 
         // console.log("downloads", downloadsData);
 
@@ -375,6 +383,16 @@ const Statistics = () => {
       dataIndex: "name",
       key: "name",
       sorter: (a, b) => a.name.localeCompare(b.name),
+      render: (text: string, record: any) => (
+        <Button
+          type="link"
+          onClick={() => navigate(`/dashboard/user/${record.id}`)}
+          className="text-left"
+          size="small"
+        >
+          {text}
+        </Button>
+      ),
     },
     {
       title: "Email",
