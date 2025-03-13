@@ -684,7 +684,7 @@ function MainLayout({ children }: LayoutProps) {
                                               // )}&division=${encodeURIComponent(
                                               //   division
                                               // )}`}
-                                              to={`/procedure_documents?subcategory=${subcategory.name}/${division}`}
+                                              to={`/procedure_documents?subcategory=${division}`}
                                               className="block text-gray-700 hover:text-blue-600 hover:bg-blue-100/50 px-3 py-2 rounded-lg transition-all duration-200 text-sm"
                                             >
                                               {division}

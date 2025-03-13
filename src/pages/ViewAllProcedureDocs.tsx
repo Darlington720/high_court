@@ -47,7 +47,7 @@ export default function ViewAllProcedureDocs() {
 
   const [downloadingFiles, setDownloadingFiles] = useState({});
 
-  // console.log("court", court);
+  // console.log("subcategory", subcategory);
 
   // const handlePreview = (fileUrl: string) => {
   //   window.open(fileUrl, "_blank");
