@@ -197,7 +197,7 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
   const [filters, setFilters] = useState({});
-  const [searchResults, setSearchResults] = useState<any[] | null>([]);
+  const [searchResults, setSearchResults] = useState<any[] | null>(null);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
