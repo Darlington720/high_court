@@ -33,6 +33,7 @@ import AppContext from "../context/AppContext";
 import { supabase } from "../lib/supabase";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { debounce } from "lodash";
 
 // Mock data for recent sections
 const recentData = {
@@ -196,7 +197,7 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
   const [filters, setFilters] = useState({});
-  const [searchResults, setSearchResults] = useState<any[] | null>(null);
+  const [searchResults, setSearchResults] = useState<any[] | null>([]);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -210,6 +211,7 @@ export default function Home() {
   >(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [loadingDocuments, setLoadingDocuments] = useState(false);
+  const [recomendations, setRecomendations] = useState([]);
   const appContext = useContext(AppContext);
 
   const handleSearch = async () => {
@@ -218,10 +220,15 @@ export default function Home() {
     if (searchTerm == "") return;
 
     setLoadingDocuments(true);
-    let { data: documents, error } = await supabase
-      .from("documents")
-      .select("*")
-      .ilike("title", `%${searchTerm}%`);
+    // let { data: documents, error } = await supabase
+    //   .from("documents")
+    //   .select("*")
+    //   .ilike("title", `%${searchTerm}%`);
+
+    let { data: documents, error } = await supabase.rpc(
+      "fuzzy_search_documents",
+      { search_query: searchTerm }
+    );
 
     console.log("error", error);
 
@@ -339,6 +346,41 @@ export default function Home() {
     loadDocuments();
   }, []);
 
+  useEffect(() => {
+    if (searchTerm.trim() === "") {
+      setRecomendations([]);
+      return;
+    }
+
+    if (searchTerm == "") return;
+
+    // Debounced search to prevent excessive API calls
+    const delayedSearch = debounce(async () => {
+      setLoadingDocuments(true);
+
+      // let { data: documents, error } = await supabase
+      //   .from("documents")
+      //   .select("*")
+      //   .ilike("title", `%${searchTerm}%`); // Case-insensitive partial match
+
+      let { data: documents, error } = await supabase
+        .rpc("fuzzy_search_documents", { search_query: searchTerm })
+        .limit(10);
+
+      if (error) {
+        console.error("Search error:", error);
+      } else {
+        setRecomendations(documents || []);
+      }
+
+      setLoadingDocuments(false);
+    }, 500); // Wait 500ms after last keystroke before searching
+
+    delayedSearch();
+
+    return () => delayedSearch.cancel(); // Cleanup debounce on unmount
+  }, [searchTerm]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section with Search */}
@@ -394,6 +436,19 @@ export default function Home() {
                     </Button>
                   </div>
                 </div>
+                {recomendations.length > 0 && (
+                  <ul className="mt-2 bg-white border border-gray-200 rounded-lg shadow-md">
+                    {recomendations.map((doc) => (
+                      <li
+                        key={doc.id}
+                        className="p-2 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => handleDocClick(doc)}
+                      >
+                        {doc.title}
+                      </li>
+                    ))}
+                  </ul>
+                )}
 
                 {/* Advanced Search Filters */}
                 {showAdvancedSearch && (
