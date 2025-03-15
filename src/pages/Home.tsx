@@ -33,7 +33,7 @@ import AppContext from "../context/AppContext";
 import { supabase } from "../lib/supabase";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { debounce } from "lodash";
+import { debounce } from "lodash-es";
 
 // Mock data for recent sections
 const recentData = {
