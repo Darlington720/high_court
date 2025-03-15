@@ -47,7 +47,7 @@ export default function ViewAllProcedureDocs() {
 
   const [downloadingFiles, setDownloadingFiles] = useState({});
 
-  // console.log("subcategory", subcategory);
+  // console.log("subcategory---", subcategory);
 
   // const handlePreview = (fileUrl: string) => {
   //   window.open(fileUrl, "_blank");
@@ -111,7 +111,7 @@ export default function ViewAllProcedureDocs() {
     setError(null);
     try {
       const data = await fetchDocuments(
-        { category: "Procedure Documents", subcategory: subcategory },
+        { category: "Procedure Documents", subcategory: `${subcategory}` },
         { field: "created_at", direction: "desc" }
       );
 

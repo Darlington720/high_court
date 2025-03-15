@@ -504,7 +504,7 @@ function MainLayout({ children }: LayoutProps) {
             "Civil Procedure",
             "Criminal Procedure",
             "Family Law Practice",
-            "⁠Land Transactions",
+            "Land Transactions",
             "Commercial Law Practice",
           ],
         },
@@ -684,7 +684,9 @@ function MainLayout({ children }: LayoutProps) {
                                               // )}&division=${encodeURIComponent(
                                               //   division
                                               // )}`}
-                                              to={`/procedure_documents?subcategory=${division}`}
+                                              to={`/procedure_documents?subcategory=${encodeURIComponent(
+                                                division
+                                              )}`}
                                               className="block text-gray-700 hover:text-blue-600 hover:bg-blue-100/50 px-3 py-2 rounded-lg transition-all duration-200 text-sm"
                                             >
                                               {division}
@@ -929,11 +931,12 @@ function MainLayout({ children }: LayoutProps) {
                                     {subcategory.divisions.map((division) => (
                                       <Link
                                         key={division}
-                                        to={`/procedure_documents?subcategory=${encodeURIComponent(
-                                          subcategory.name
-                                        )}&division=${encodeURIComponent(
-                                          division
-                                        )}`}
+                                        // to={`/judgments?court=${encodeURIComponent(
+                                        //   subcategory.name
+                                        // )}&division=${encodeURIComponent(
+                                        //   division
+                                        // )}`}
+                                        to={`/procedure_documents?subcategory=${division}`}
                                         onClick={() => setMobileMenuOpen(false)}
                                         className="block text-gray-300 hover:text-white hover:bg-gray-800 px-3 py-2 rounded-md transition-all duration-200"
                                       >
