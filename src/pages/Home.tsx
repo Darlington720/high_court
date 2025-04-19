@@ -34,6 +34,11 @@ import { supabase } from "../lib/supabase";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { debounce } from "lodash-es";
+import { SEO } from "../components/SEO";
+import { Helmet } from "react-helmet-async";
+import { logSearch } from "../lib/search";
+import { motion } from "framer-motion";
+import "../styles/home.css"
 
 // Mock data for recent sections
 const recentData = {
@@ -224,16 +229,20 @@ export default function Home() {
     //   .from("documents")
     //   .select("*")
     //   .ilike("title", `%${searchTerm}%`);
-
+    const startTime = performance.now();
     let { data: documents, error } = await supabase.rpc(
       "fuzzy_search_documents",
       { search_query: searchTerm }
     );
+    const searchTime = (performance.now() - startTime) / 1000;
 
-    console.log("error", error);
-
+    await logSearch(
+      searchTerm,
+      appContext?.user?.id,
+      documents.length,
+      searchTime
+    );
     // console.log("documents", documents);
-
     setLoadingDocuments(false);
 
     if (documents?.length == 0) {
@@ -363,9 +372,18 @@ export default function Home() {
       //   .select("*")
       //   .ilike("title", `%${searchTerm}%`); // Case-insensitive partial match
 
+      const startTime = performance.now();
       let { data: documents, error } = await supabase
         .rpc("fuzzy_search_documents", { search_query: searchTerm })
         .limit(10);
+      const searchTime = (performance.now() - startTime) / 1000;
+
+      await logSearch(
+        searchTerm,
+        appContext?.user?.id,
+        documents.length,
+        searchTime
+      );
 
       if (error) {
         console.error("Search error:", error);
@@ -383,6 +401,35 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <SEO />
+
+      {searchResults && (
+        <Helmet>
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "ItemList",
+              itemListElement: searchResults.map((doc, index) => ({
+                "@type": "ListItem",
+                position: index + 1,
+                item: {
+                  "@type": "DigitalDocument",
+                  name: doc.title,
+                  description:
+                    doc.description ||
+                    `${doc.title} - Available on Educite Virtual Library`,
+                  datePublished: doc.created_at,
+                  provider: {
+                    "@type": "Organization",
+                    name: "Educite Virtual Library",
+                    url: "https://educite.com",
+                  },
+                },
+              })),
+            })}
+          </script>
+        </Helmet>
+      )}
       {/* Hero Section with Search */}
       <div className="relative overflow-hidden">
         {/* Background Image */}
@@ -403,17 +450,22 @@ export default function Home() {
         {/* Content */}
         <div className="relative z-10 py-24 sm:py-32">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="mx-auto max-w-2xl text-center">
+          <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="mx-auto max-w-2xl text-center"
+            >
               <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
-                Welcome to <br /> Educite Virtual Library
+                Welcome to <span className="text-blue-300">Educite</span> Virtual Library
               </h1>
               <p className="mt-6 text-lg leading-8 text-blue-100">
-                Instantly search through thousands of documents.
+                Your comprehensive legal resource hub. Access thousands of documents instantly.
               </p>
 
-              {/* Search Bar */}
-              <div className="mt-10">
-                <div className="relative">
+              {/* Enhanced Search Bar */}
+              <div className="mt-12 backdrop-blur-sm bg-white/10 p-4 rounded-2xl">
+              <div className="relative">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                     <Search className="h-5 w-5 text-gray-400" />
                   </div>
@@ -545,10 +597,12 @@ export default function Home() {
                   </Button>
                 </div>
               </div>
-            </div>
+            </motion.div>
+            
           </div>
         </div>
       </div>
+
 
       {/* Search Results */}
       {searchResults && (
@@ -561,10 +615,15 @@ export default function Home() {
       <div className="mx-auto max-w-7xl px-6 py-12">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           {/* Recent Judgments */}
-          <div className="rounded-lg bg-white p-6 shadow-md">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+            className="rounded-xl bg-white p-6 shadow-lg hover:shadow-xl transition-shadow duration-300"
+          >
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center">
-                <div className="rounded-lg bg-blue-100 p-3">
+                <div className="rounded-xl bg-blue-100 p-3">
                   <Gavel className="h-6 w-6 text-blue-600" />
                 </div>
                 <h2 className="ml-3 text-xl font-semibold text-gray-900">
@@ -573,10 +632,10 @@ export default function Home() {
               </div>
               <Link
                 to="/judgments"
-                className="text-blue-600 hover:text-blue-700 flex items-center text-sm font-medium"
+                className="group text-blue-600 hover:text-blue-700 flex items-center text-sm font-medium"
               >
                 View all
-                <ChevronRight className="ml-1 h-4 w-4" />
+                <ChevronRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
             <div className="divide-y divide-gray-200">
@@ -624,12 +683,16 @@ export default function Home() {
                 </div>
               ))}
             </div>
-          </div>
+            </motion.div>
 
-          {/* Recent Legislation */}
-          <div className="rounded-lg bg-white p-6 shadow-md">
+            <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+            className="rounded-xl bg-white p-6 shadow-lg hover:shadow-xl transition-shadow duration-300"
+          >
             <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center">
+            <div className="flex items-center">
                 <div className="rounded-lg bg-purple-100 p-3">
                   <FileText className="h-6 w-6 text-purple-600" />
                 </div>
@@ -686,7 +749,7 @@ export default function Home() {
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div >
 
           {/* Recent Hansards */}
           <div className="rounded-lg bg-white p-6 shadow-md">
@@ -817,7 +880,11 @@ export default function Home() {
       {/* Subscription Packages */}
       <div className="bg-gradient-to-b from-gray-50 to-white py-24 sm:py-16">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
+        <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mx-auto max-w-2xl text-center"
+          >
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
               Choose Your Subscription Plan
             </h2>
@@ -825,7 +892,7 @@ export default function Home() {
               Select the perfect plan for your needs, from individual access to
               enterprise solutions
             </p>
-          </div>
+            </motion.div>
           <div className="mx-auto mt-16 grid max-w-lg grid-cols-1 gap-6 sm:mt-20 lg:max-w-none lg:grid-cols-4">
             {subscriptionPlans.map((plan) => {
               const IconComponent = plan.icon;

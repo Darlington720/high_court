@@ -25,6 +25,7 @@ import { PaymentModal } from "../components/PaymentModal";
 import type { Document } from "../types";
 import AppContext from "../context/AppContext";
 import { toast } from "react-toastify";
+import { SEO } from "../components/SEO";
 
 export default function ViewAllHansards() {
   const navigate = useNavigate();
@@ -157,6 +158,63 @@ export default function ViewAllHansards() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
+      <SEO
+        title={year ? `Hansards ${year} | Educite Virtual Library` : `Hansards | Educite Virtual Library`}
+        description={year ? 
+          `Access ${year} parliamentary hansards and debates. Browse through official parliamentary records and documents from ${year}.` : 
+          `Access parliamentary hansards and debates from all years. Browse through official parliamentary records and documents.`}
+        keywords={`hansards ${year}, parliamentary debates, parliamentary records, ${year} parliament sessions`}
+        canonicalUrl={`https://educitevl.edu.ug/hansards${year ? `/${year}` : ''}`}
+        type="article"
+      />
+      
+      {/* Add Breadcrumb Structured Data */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://educitevl.edu.ug"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Hansards",
+              "item": "https://educitevl.edu.ug/hansards"
+            },
+            ...(year ? [{
+              "@type": "ListItem",
+              "position": 3,
+              "name": `Hansards ${year}`,
+              "item": `https://educitevl.edu.ug/hansards/${year}`
+            }] : [])
+          ]
+        })}
+      </script>
+
+      {/* Add CollectionPage Structured Data */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          "name": year ? `Hansards ${year}` : "Hansards",
+          "description": year ? 
+            `Access ${year} parliamentary hansards and debates` : 
+            "Access parliamentary hansards and debates from all years",
+          "hasPart": paginatedDocuments.map(doc => ({
+            "@type": "DigitalDocument",
+            "name": doc.title,
+            "datePublished": doc.created_at,
+            "about": "Parliamentary Hansard",
+            "accessMode": "textual"
+          }))
+        })}
+      </script>
+
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="space-y-8">
           {/* Header */}

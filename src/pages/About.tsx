@@ -9,6 +9,7 @@ import {
   Library,
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
+import { SEO } from "../components/SEO";
 
 const features = [
   {
@@ -67,6 +68,12 @@ const objectives = [
 export default function About() {
   return (
     <div className="min-h-screen bg-gray-50">
+      <SEO
+        title={"About | Educite Virtual Library"}
+        description="Empowering legal professionals and researchers with comprehensive digital access to legal resources."
+        keywords="judgments, court records, legal documents, legal resources, academic materials, virtual library, legal notice, ordinances"
+        type="article"
+      />
       {/* Hero Section */}
       <div className="relative bg-blue-900 py-24">
         <div

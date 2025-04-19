@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Suspense, useState } from "react";
 import { ToastContainer } from "react-toastify";
+import { Helmet, HelmetProvider } from "react-helmet-async";
 import { Layout } from "./components/Layout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import Home from "./pages/Home";
@@ -69,207 +70,220 @@ function App() {
   // console.log("documentPreview", documentPreview);
 
   return (
-    <AppContext.Provider
-      value={{
-        user,
-        setUser,
-        editDocModalVisible,
-        setEditDocModalVisible,
-        selectedDocument,
-        setSelectedDocument,
-        selectedDocumentPreviewVisible,
-        setSelectedDocumentPreviewVisible,
-        documentPreview,
-        setDocumentPreview,
-      }}
-    >
-      {selectedDocumentPreviewVisible && (
-        <DocumentPreview
-          documentUrl={documentPreview.file_url}
-          documentDetails={{
-            id: documentPreview.id,
-            title: documentPreview.title,
-            description: documentPreview.subcategory,
-          }}
-          onClose={() => setSelectedDocumentPreviewVisible(false)}
+    <HelmetProvider>
+      <Helmet>
+        <title>Educite Virtual Library</title>
+        <meta name="title" content="Educite Virtual Library" />
+        <meta
+          name="description"
+          content="Access thousands of educational documents, legal resources, and academic materials through Educite's comprehensive virtual library."
         />
-      )}
-      <ToastContainer position="top-center" autoClose={3000} />
+      </Helmet>
+      <AppContext.Provider
+        value={{
+          user,
+          setUser,
+          editDocModalVisible,
+          setEditDocModalVisible,
+          selectedDocument,
+          setSelectedDocument,
+          selectedDocumentPreviewVisible,
+          setSelectedDocumentPreviewVisible,
+          documentPreview,
+          setDocumentPreview,
+        }}
+      >
+        {selectedDocumentPreviewVisible && (
+          <DocumentPreview
+            documentUrl={documentPreview.file_url}
+            documentDetails={{
+              id: documentPreview.id,
+              title: documentPreview.title,
+              description: documentPreview.subcategory,
+            }}
+            onClose={() => setSelectedDocumentPreviewVisible(false)}
+          />
+        )}
+        <ToastContainer position="top-center" autoClose={3000} />
 
-      <ErrorBoundary>
-        <Router>
-          <Layout>
-            <Suspense
-              fallback={
-                <div className="flex h-screen items-center justify-center">
-                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
-                </div>
-              }
-            >
-              <ScrollToTop />
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/dashboard" element={<Overview />} />
-                <Route
-                  path="/dashboard/activity"
-                  element={<RecentActivity />}
-                />
-                <Route
-                  path="/dashboard/subscription-analytics"
-                  element={<SubscriptionAnalytics />}
-                />
-                <Route path="/dashboard/users" element={<ViewUsers />} />
-                <Route path="/dashboard/users/add" element={<AddUser />} />
-                <Route
-                  path="/dashboard/users/roles"
-                  element={<RolesPermissions />}
-                />
-                <Route
-                  path="/dashboard/users/status"
-                  element={<UserStatus />}
-                />
-                <Route
-                  path="/dashboard/subscriptions"
-                  element={<ViewSubscriptions />}
-                />
-                <Route
-                  path="/dashboard/subscriptions/plans"
-                  element={<SubscriptionPlans />}
-                />
-                <Route
-                  path="/dashboard/subscriptions/transactions"
-                  element={<PaymentTransactions />}
-                />
-                <Route
-                  path="/dashboard/subscriptions/expired"
-                  element={<ExpiredSubscriptions />}
-                />
+        <ErrorBoundary>
+          <Router>
+            <Layout>
+              <Suspense
+                fallback={
+                  <div className="flex h-screen items-center justify-center">
+                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
+                  </div>
+                }
+              >
+                <ScrollToTop />
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/dashboard" element={<Overview />} />
+                  <Route
+                    path="/dashboard/activity"
+                    element={<RecentActivity />}
+                  />
+                  <Route
+                    path="/dashboard/subscription-analytics"
+                    element={<SubscriptionAnalytics />}
+                  />
+                  <Route path="/dashboard/users" element={<ViewUsers />} />
+                  <Route path="/dashboard/users/add" element={<AddUser />} />
+                  <Route
+                    path="/dashboard/users/roles"
+                    element={<RolesPermissions />}
+                  />
+                  <Route
+                    path="/dashboard/users/status"
+                    element={<UserStatus />}
+                  />
+                  <Route
+                    path="/dashboard/subscriptions"
+                    element={<ViewSubscriptions />}
+                  />
+                  <Route
+                    path="/dashboard/subscriptions/plans"
+                    element={<SubscriptionPlans />}
+                  />
+                  <Route
+                    path="/dashboard/subscriptions/transactions"
+                    element={<PaymentTransactions />}
+                  />
+                  <Route
+                    path="/dashboard/subscriptions/expired"
+                    element={<ExpiredSubscriptions />}
+                  />
 
-                {/* Document Management Routes */}
-                <Route
-                  path="/dashboard/documents"
-                  element={<ViewDocuments />}
-                />
-                <Route
-                  path="/dashboard/documents/upload"
-                  element={<UploadDocument />}
-                />
-                <Route
-                  path="/dashboard/documents/categories"
-                  element={<ManageCategories />}
-                />
-                <Route
-                  path="/dashboard/documents/categories/add"
-                  element={<AddCategory />}
-                />
-                <Route
-                  path="/dashboard/documents/categories/edit/:categoryId"
-                  element={<EditCategory />}
-                />
-                <Route
-                  path="/dashboard/documents/subcategories/add"
-                  element={<AddSubcategory />}
-                />
+                  {/* Document Management Routes */}
+                  <Route
+                    path="/dashboard/documents"
+                    element={<ViewDocuments />}
+                  />
+                  <Route
+                    path="/dashboard/documents/upload"
+                    element={<UploadDocument />}
+                  />
+                  <Route
+                    path="/dashboard/documents/categories"
+                    element={<ManageCategories />}
+                  />
+                  <Route
+                    path="/dashboard/documents/categories/add"
+                    element={<AddCategory />}
+                  />
+                  <Route
+                    path="/dashboard/documents/categories/edit/:categoryId"
+                    element={<EditCategory />}
+                  />
+                  <Route
+                    path="/dashboard/documents/subcategories/add"
+                    element={<AddSubcategory />}
+                  />
 
-                {/* Specific Document Type Routes */}
-                <Route
-                  path="/dashboard/documents/judgments"
-                  element={<ViewJudgments />}
-                />
-                <Route
-                  path="/dashboard/documents/legislation"
-                  element={<ViewLegislation />}
-                />
-                <Route
-                  path="/dashboard/documents/hansards"
-                  element={<ViewHansards />}
-                />
-                <Route
-                  path="/dashboard/documents/archival-materials"
-                  element={<ViewArchivalMaterials />}
-                />
-                <Route
-                  path="/dashboard/documents/gazettes"
-                  element={<ViewGazettes />}
-                />
-                <Route
-                  path="/dashboard/documents/acts"
-                  element={<ViewActsOfParliament />}
-                />
-                <Route
-                  path="/dashboard/documents/courts-of-record"
-                  element={<ViewCourtsOfRecord />}
-                />
-                <Route
-                  path="/dashboard/documents/statutory"
-                  element={<ViewStatutoryInstruments />}
-                />
-                <Route
-                  path="/dashboard/documents/revised-edition"
-                  element={<ViewRevisedEdition />}
-                />
+                  {/* Specific Document Type Routes */}
+                  <Route
+                    path="/dashboard/documents/judgments"
+                    element={<ViewJudgments />}
+                  />
+                  <Route
+                    path="/dashboard/documents/legislation"
+                    element={<ViewLegislation />}
+                  />
+                  <Route
+                    path="/dashboard/documents/hansards"
+                    element={<ViewHansards />}
+                  />
+                  <Route
+                    path="/dashboard/documents/archival-materials"
+                    element={<ViewArchivalMaterials />}
+                  />
+                  <Route
+                    path="/dashboard/documents/gazettes"
+                    element={<ViewGazettes />}
+                  />
+                  <Route
+                    path="/dashboard/documents/acts"
+                    element={<ViewActsOfParliament />}
+                  />
+                  <Route
+                    path="/dashboard/documents/courts-of-record"
+                    element={<ViewCourtsOfRecord />}
+                  />
+                  <Route
+                    path="/dashboard/documents/statutory"
+                    element={<ViewStatutoryInstruments />}
+                  />
+                  <Route
+                    path="/dashboard/documents/revised-edition"
+                    element={<ViewRevisedEdition />}
+                  />
 
-                {/* Content Management Routes */}
-                <Route
-                  path="/dashboard/content/pages"
-                  element={<ManagePages />}
-                />
-                <Route
-                  path="/dashboard/system_reports"
-                  element={<Statistics />}
-                />
+                  {/* Content Management Routes */}
+                  <Route
+                    path="/dashboard/content/pages"
+                    element={<ManagePages />}
+                  />
+                  <Route
+                    path="/dashboard/system_reports"
+                    element={<Statistics />}
+                  />
 
-                <Route
-                  path="/dashboard/user/:userId"
-                  element={<UserDetails />}
-                />
-                <Route path="/dashboard/content/blog" element={<BlogPosts />} />
-                <Route
-                  path="/dashboard/content/testimonials"
-                  element={<Testimonials />}
-                />
-                <Route path="/dashboard/reports" element={<ViewReports />} />
+                  <Route
+                    path="/dashboard/user/:userId"
+                    element={<UserDetails />}
+                  />
+                  <Route
+                    path="/dashboard/content/blog"
+                    element={<BlogPosts />}
+                  />
+                  <Route
+                    path="/dashboard/content/testimonials"
+                    element={<Testimonials />}
+                  />
+                  <Route path="/dashboard/reports" element={<ViewReports />} />
 
-                {/* Public Routes */}
-                <Route path="/partners" element={<Partners />} />
-                <Route path="/about" element={<About />} />
+                  {/* Public Routes */}
+                  <Route path="/partners" element={<Partners />} />
+                  <Route path="/about" element={<About />} />
 
-                {/* Public View All Routes */}
-                <Route path="/judgments" element={<ViewAllJudgments />} />
-                <Route
-                  path="/procedure_documents"
-                  element={<ViewAllProcedureDocs />}
-                />
-                <Route
-                  path="/statutory-instruments"
-                  element={<StatutoryInstruments />}
-                />
-                <Route
-                  path="/archival-materials"
-                  element={<ArchivalMaterials />}
-                />
-                <Route path="/educite_reports" element={<EduciteReports />} />
-                <Route path="/legislation" element={<ViewAllLegislation />} />
-                <Route
-                  path="/legal-notices"
-                  element={<ViewAllLegalNotices />}
-                />
-                <Route path="/ordinances" element={<ViewAllOrdinances />} />
-                <Route path="/hansards/:year" element={<ViewAllHansards />} />
-                <Route path="/hansards" element={<ViewAllHansards />} />
-                <Route path="/gazettes" element={<ViewAllGazettes />} />
-                <Route
-                  path="/open-access-resources"
-                  element={<OpenAccessResources />}
-                />
-                <Route path="/contact-us" element={<ContactUs />} />
-              </Routes>
-            </Suspense>
-          </Layout>
-        </Router>
-      </ErrorBoundary>
-    </AppContext.Provider>
+                  {/* Public View All Routes */}
+                  <Route path="/judgments" element={<ViewAllJudgments />} />
+                  <Route
+                    path="/procedure_documents"
+                    element={<ViewAllProcedureDocs />}
+                  />
+                  <Route
+                    path="/statutory-instruments"
+                    element={<StatutoryInstruments />}
+                  />
+                  <Route
+                    path="/archival-materials"
+                    element={<ArchivalMaterials />}
+                  />
+                  <Route path="/educite_reports" element={<EduciteReports />} />
+                  <Route path="/legislation" element={<ViewAllLegislation />} />
+                  <Route
+                    path="/legal-notices"
+                    element={<ViewAllLegalNotices />}
+                  />
+                  <Route path="/ordinances" element={<ViewAllOrdinances />} />
+                  <Route path="/hansards/:year" element={<ViewAllHansards />} />
+                  <Route path="/hansards" element={<ViewAllHansards />} />
+                  <Route path="/gazettes" element={<ViewAllGazettes />} />
+                  <Route
+                    path="/open-access-resources"
+                    element={<OpenAccessResources />}
+                  />
+                  <Route path="/contact-us" element={<ContactUs />} />
+                </Routes>
+              </Suspense>
+            </Layout>
+          </Router>
+        </ErrorBoundary>
+      </AppContext.Provider>
+    </HelmetProvider>
   );
 }
 

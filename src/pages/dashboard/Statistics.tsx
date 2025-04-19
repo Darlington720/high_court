@@ -11,6 +11,7 @@ import {
   BarChart3,
   PieChart,
   LineChart,
+  Search,
 } from "lucide-react";
 import { Tabs, DatePicker, Table, Button, Select } from "antd";
 import {
@@ -67,6 +68,90 @@ const Statistics = () => {
     views: [],
     userStats: [],
   });
+  const [popularDocs, setPopularDocs] = useState([]);
+  const [searchMetrics, setSearchMetrics] = useState({
+    totalSearches: 0,
+    topSearchTerms: [],
+    averageSearchTime: 0,
+  });
+  const [categoryMetrics, setCategoryMetrics] = useState([]);
+
+  const mockPopularDocs = [
+    {
+      document_id: 1,
+      documents: {
+        title: "Supreme Court Judgment 2023/001",
+        category: "Judgments",
+        subcategory: "Supreme Court",
+      },
+      count: 245,
+    },
+    {
+      document_id: 2,
+      documents: {
+        title: "Companies Act 2012",
+        category: "Legislation",
+        subcategory: "Acts",
+      },
+      count: 189,
+    },
+    {
+      document_id: 3,
+      documents: {
+        title: "Parliamentary Proceedings March 2024",
+        category: "Hansards",
+        subcategory: "Parliament",
+      },
+      count: 156,
+    },
+    {
+      document_id: 4,
+      documents: {
+        title: "Constitutional Amendment Bill 2024",
+        category: "Bills",
+        subcategory: "Constitutional",
+      },
+      count: 134,
+    },
+    {
+      document_id: 5,
+      documents: {
+        title: "Legal Notice No. 45 of 2024",
+        category: "Legal Notices",
+        subcategory: "2024",
+      },
+      count: 98,
+    },
+  ];
+
+  // Mock search metrics
+  const mockSearchMetrics = {
+    totalSearches: 1247,
+    topSearchTerms: [
+      { term: "company registration", count: 89 },
+      { term: "land law", count: 76 },
+      { term: "criminal procedure", count: 65 },
+      { term: "constitutional rights", count: 54 },
+      { term: "civil procedure", count: 48 },
+    ],
+    averageSearchTime: 2.3,
+  };
+
+  // Mock category metrics
+  const mockCategoryMetrics = [
+    { category: "Judgments", count: 1245 },
+    { category: "Legislation", count: 867 },
+    { category: "Hansards", count: 543 },
+    { category: "Legal Notices", count: 432 },
+    { category: "Bills", count: 234 },
+    { category: "Gazettes", count: 189 },
+  ];
+
+  useEffect(() => {
+    setPopularDocs(mockPopularDocs);
+    setSearchMetrics(mockSearchMetrics);
+    setCategoryMetrics(mockCategoryMetrics);
+  }, []);
 
   // Fetch statistics data
   useEffect(() => {
@@ -228,6 +313,57 @@ const Statistics = () => {
     };
 
     fetchStatistics();
+  }, []);
+
+  useEffect(() => {
+    const fetchExtendedStatistics = async () => {
+      try {
+        // Fetch popular documents
+        const { data: popularDocsData } = await supabase
+          .from("document_views")
+          .select(
+            `
+            document_id,
+            documents (
+              title,
+              category,
+              subcategory
+            ),
+            count
+          `
+          )
+          .group("document_id")
+          .order("count", { ascending: false })
+          .limit(10);
+
+        // Fetch search metrics
+        const { data: searchData } = await supabase
+          .from("search_logs")
+          .select("*")
+          .gte(
+            "created_at",
+            new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+          );
+
+        // Fetch category metrics
+        const { data: categoryData } = await supabase
+          .from("documents")
+          .select("category, subcategory")
+          .count();
+
+        setPopularDocs(popularDocsData || []);
+        setSearchMetrics({
+          totalSearches: searchData?.length || 0,
+          topSearchTerms: processSearchTerms(searchData),
+          averageSearchTime: calculateAverageSearchTime(searchData),
+        });
+        setCategoryMetrics(categoryData || []);
+      } catch (error) {
+        console.error("Error fetching extended statistics:", error);
+      }
+    };
+
+    fetchExtendedStatistics();
   }, []);
 
   // Prepare chart data
@@ -427,6 +563,89 @@ const Statistics = () => {
     },
   ];
 
+  useEffect(() => {
+    const fetchExtendedStatistics = async () => {
+      try {
+        // Fetch most viewed documents using RPC
+        const { data: viewsData, error: viewsError } = await supabase.rpc(
+          "get_document_view_stats"
+        );
+
+        if (viewsError) throw viewsError;
+
+        // Fetch search metrics using RPC
+        const { data: searchTermData, error: searchError } = await supabase.rpc(
+          "get_search_term_stats"
+        );
+
+        if (searchError) throw searchError;
+
+        // Get total searches count
+        const { count: totalSearches, error: searchCountError } = await supabase
+          .from("search_logs")
+          .select("*", { count: "exact", head: true })
+          .gte(
+            "created_at",
+            new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+          );
+
+        if (searchCountError) throw searchCountError;
+
+        // Fetch category distribution using RPC
+        const { data: categoryData, error: categoryError } = await supabase.rpc(
+          "get_category_distribution"
+        );
+
+        if (categoryError) throw categoryError;
+
+        // Transform the data to match your component's expected format
+        const transformedViewsData = viewsData.map((doc) => ({
+          document_id: doc.document_id,
+          documents: {
+            title: doc.title,
+            category: doc.category,
+            subcategory: doc.subcategory,
+          },
+          count: Number(doc.view_count),
+        }));
+
+        const transformedSearchTerms = searchTermData.map((term) => ({
+          term: term.search_term,
+          count: Number(term.count),
+        }));
+
+        console.log("first", {
+          transformedViewsData,
+          totalSearches: totalSearches || 0,
+          topSearchTerms: transformedSearchTerms,
+          averageSearchTime: 0,
+          categoryData,
+        });
+
+        setPopularDocs(transformedViewsData);
+        setSearchMetrics({
+          totalSearches: totalSearches || 0,
+          topSearchTerms: transformedSearchTerms,
+          averageSearchTime: 0, // You might want to add this to your RPC if needed
+        });
+        setCategoryMetrics(
+          categoryData.map((cat) => ({
+            category: cat.category,
+            count: Number(cat.count),
+          }))
+        );
+      } catch (error) {
+        console.error("Error fetching extended statistics:", error);
+        // Fallback to mock data
+        setPopularDocs(mockPopularDocs);
+        setSearchMetrics(mockSearchMetrics);
+        setCategoryMetrics(mockCategoryMetrics);
+      }
+    };
+
+    fetchExtendedStatistics();
+  }, []);
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
@@ -472,6 +691,21 @@ const Statistics = () => {
           </div>
         </div>
 
+        {/* New metrics */}
+        <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-amber-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-500 text-sm">Total Searches</p>
+              <h3 className="text-2xl font-bold text-gray-800 mt-1">
+                {searchMetrics.totalSearches}
+              </h3>
+            </div>
+            <div className="bg-amber-100 p-3 rounded-full">
+              <Search className="text-amber-500" size={24} />
+            </div>
+          </div>
+        </div>
+
         <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
           <div className="flex items-center justify-between">
             <div>
@@ -498,6 +732,69 @@ const Statistics = () => {
               <Eye className="text-purple-500" size={24} />
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold mb-4">Most Viewed Documents</h2>
+          <div className="space-y-4">
+            {popularDocs.map((doc, index) => (
+              <div
+                key={doc.document_id}
+                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+              >
+                <div className="flex items-center space-x-3 min-w-0 flex-1">
+                  <span className="text-lg font-semibold text-gray-500 flex-shrink-0">
+                    {index + 1}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    {/* <Tooltip title={doc.documents.title}> */}
+                    <p className="font-medium truncate">
+                      {doc.documents.title}
+                    </p>
+                    {/* </Tooltip> */}
+                    <p className="text-sm text-gray-500 truncate">
+                      {doc.documents.category}
+                    </p>
+                  </div>
+                </div>
+                <span className="text-blue-600 font-semibold flex-shrink-0 ml-4">{doc.count} views</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold mb-4">Top Search Terms</h2>
+          <div className="space-y-4">
+            {searchMetrics.topSearchTerms.map((term, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+              >
+                <span className="font-medium">{term.term}</span>
+                <span className="text-gray-600">{term.count} searches</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h2 className="text-xl font-semibold mb-4">
+          Document Distribution by Category
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {categoryMetrics.map((category) => (
+            <div key={category.category} className="p-4 bg-gray-50 rounded-lg">
+              <h3 className="font-medium text-gray-800">{category.category}</h3>
+              <p className="text-2xl font-bold text-blue-600 mt-2">
+                {category.count}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
 

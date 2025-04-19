@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+
+# Dynamic Sitemap
+Sitemap: https://educitevl.edu.ug/sitemap.xml
+
+# Disallow admin and private routes
+Disallow: /admin/*
+Disallow: /private/*
+Disallow: /api/*
+Disallow: /search?*
+
+# Allow specific document types
+Allow: /hansards/$
+Allow: /hansards/*/
+Allow: /gazettes/$
+Allow: /judgments?court=*
+Allow: /legislation/$
+
+# Crawl-delay
+Crawl-delay: 10

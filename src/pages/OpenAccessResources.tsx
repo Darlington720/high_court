@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { SEO } from "../components/SEO";
 
 export default function OpenAccessResources() {
   const [iframeHeight, setIframeHeight] = useState("2000px");
@@ -16,6 +17,12 @@ export default function OpenAccessResources() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+       <SEO
+        title={"Open Access Resources | Educite Virtual Library"}
+        description="Access thousands of educational documents, legal resources, and academic materials through Educite's comprehensive virtual library."
+        keywords="judgments, court records, legal documents, legal resources, academic materials, virtual library, legal notice, ordinances"
+        type="article"
+      />
       {/* Hero Section */}
       <div className="relative bg-blue-900 py-24">
         <div

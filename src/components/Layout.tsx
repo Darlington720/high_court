@@ -49,6 +49,8 @@ import {
   FileBarChart,
   LogIn,
   List,
+  Shield,
+  Mail,
 } from "lucide-react";
 import { Button } from "./ui/Button";
 import EduciteLogo from "../../assets/imgs/educite-logo.png";
@@ -265,22 +267,22 @@ function DashboardLayout({ children }: LayoutProps) {
       </div>
 
       {/* Desktop Sidebar */}
-      <div className="hidden lg:flex lg:flex-col lg:w-72 lg:fixed lg:inset-y-0 lg:border-r lg:border-gray-800 lg:bg-gray-900 lg:pt-5 lg:pb-4">
-        <div className="flex items-center flex-shrink-0 px-6">
-          <Link to="/" className="flex items-center">
-            {/* Logo */}
+      <div className="hidden lg:flex lg:flex-col lg:w-72 lg:fixed lg:inset-y-0 bg-white border-r border-gray-200">
+        <div className="flex items-center h-16 px-6 border-b border-gray-200 bg-gray-50">
+          <Link to="/" className="flex items-center space-x-3">
             <img src={EduciteLogo} alt="Educite Logo" className="h-8 w-auto" />
+            <span className="font-semibold text-gray-900">Educite Admin</span>
           </Link>
         </div>
 
-        <div className="mt-6 flex-1 flex flex-col overflow-y-auto">
-          <nav className="px-3 mt-6 space-y-8">
+        <div className="flex-1 flex flex-col overflow-y-auto bg-gradient-to-b from-gray-50 to-white">
+          <nav className="flex-1 px-4 py-4 space-y-6">
             {navigationItems.map((section) => (
-              <div key={section.name}>
-                <h3 className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              <div key={section.name} className="space-y-3">
+                <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   {section.name}
                 </h3>
-                <div className="mt-2 space-y-1">
+                <div className="space-y-1">
                   {section.items.map((item) => {
                     const Icon = item.icon;
                     const isActive = location.pathname === item.href;
@@ -289,25 +291,21 @@ function DashboardLayout({ children }: LayoutProps) {
                         key={item.name}
                         to={item.href}
                         className={`
-                          group flex items-center px-3 py-2 text-sm font-medium rounded-md
-                          ${
-                            isActive
-                              ? "bg-gray-800 text-white"
-                              : "text-gray-300 hover:bg-gray-800 hover:text-white"
+                          group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200
+                          ${isActive 
+                            ? 'bg-blue-50 text-blue-700 shadow-sm' 
+                            : 'text-gray-700 hover:bg-gray-50 hover:text-blue-600'
                           }
                         `}
                       >
-                        <Icon
-                          className={`
-                          mr-3 h-5 w-5
-                          ${
-                            isActive
-                              ? "text-white"
-                              : "text-gray-400 group-hover:text-white"
-                          }
-                        `}
-                        />
-                        {item.name}
+                        <Icon className={`
+                          flex-shrink-0 mr-3 h-5 w-5 transition-colors duration-200
+                          ${isActive ? 'text-blue-600' : 'text-gray-400 group-hover:text-blue-600'}
+                        `}/>
+                        <span className="truncate">{item.name}</span>
+                        {isActive && (
+                          <div className="ml-auto w-1.5 h-6 rounded-full bg-blue-600" />
+                        )}
                       </Link>
                     );
                   })}
@@ -317,24 +315,25 @@ function DashboardLayout({ children }: LayoutProps) {
           </nav>
         </div>
 
-        {/* User Profile */}
-        <div className="flex-shrink-0 flex border-t border-gray-800 p-4">
-          <div className="flex items-center w-full">
-            <div className="flex-shrink-0">
-              <div className="h-8 w-8 rounded-full bg-gray-800 flex items-center justify-center">
-                <User className="h-5 w-5 text-gray-400" />
+        {/* Enhanced User Profile Section */}
+        <div className="flex-shrink-0 border-t border-gray-200">
+          <div className="p-4 bg-gray-50">
+            <div className="flex items-center space-x-3">
+              <div className="flex-shrink-0">
+                <div className="h-9 w-9 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center">
+                  <User className="h-5 w-5 text-white" />
+                </div>
               </div>
-            </div>
-            <div className="ml-3 w-full">
-              <p className="text-sm font-medium text-white group-hover:text-gray-200">
-                Admin User
-              </p>
-              <Link
-                to="/logout"
-                className="text-xs font-medium text-gray-400 group-hover:text-gray-300"
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 truncate">Admin User</p>
+                <p className="text-xs text-gray-500 truncate">Administrator</p>
+              </div>
+              <button
+                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition-colors"
+                onClick={() => {/* handle logout */}}
               >
-                Sign Out
-              </Link>
+                <LogOut className="h-5 w-5" />
+              </button>
             </div>
           </div>
         </div>
@@ -527,17 +526,16 @@ function MainLayout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation */}
-      <nav className="bg-gradient-white shadow-lg relative">
+      <nav className="bg-white shadow-md relative border-b border-gray-100">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 justify-between items-center">
             {/* Logo and Brand */}
-            <div className="flex items-center">
+            <div className="flex items-center space-x-4">
               <Link to="/" className="flex items-center">
-                {/* Logo */}
                 <img
                   src={EduciteLogo}
                   alt="Educite Logo"
-                  className="h-10 w-auto"
+                  className="h-12 w-auto transition-transform duration-200 hover:scale-105"
                 />
               </Link>
             </div>
@@ -551,7 +549,7 @@ function MainLayout({ children }: LayoutProps) {
                   onMouseEnter={() => setMegaMenuOpen(key)}
                   onMouseLeave={() => setMegaMenuOpen(null)}
                 >
-                  <button className="text-black hover:text-gray-100 flex items-center py-2 px-3 rounded-md hover:bg-blue-800/50 transition-all duration-200 font-medium">
+                  <button className="text-gray-700 hover:text-blue-600 flex items-center py-2 px-3 rounded-lg hover:bg-blue-50 transition-all duration-200 font-medium group">
                     {key === "hansards" && (
                       <BookOpen className="mr-2 h-5 w-5" />
                     )}
@@ -570,14 +568,15 @@ function MainLayout({ children }: LayoutProps) {
                       <MoreVertical className="mr-2 h-5 w-5" />
                     )}
                     {item.title}
+                   
                   </button>
 
                   {/* Mega Menu Dropdown */}
                   {megaMenuOpen === key && (
                     <div
-                      className="absolute left-0 mt-0 w-screen max-w-max bg-gradient-to-b from-blue-50 to-white rounded-lg shadow-xl ring-1 ring-black ring-opacity-5 z-50 transform transition-all duration-200 ease-out"
-                      onMouseEnter={() => setMegaMenuOpen(key)}
-                      onMouseLeave={() => setMegaMenuOpen(null)}
+                      className="absolute left-0 mt-0 w-screen max-w-max bg-white rounded-xl shadow-xl ring-1 ring-black ring-opacity-5 z-50 transform transition-all duration-200 ease-out border border-gray-100"
+                      // onMouseEnter={() => setMegaMenuOpen(key)}
+                      // onMouseLeave={() => setMegaMenuOpen(null)}
                     >
                       <div className="p-6">
                         <div className="flex items-center space-x-2 mb-4 pb-4 border-b-2 border-blue-100 w-200">
@@ -735,7 +734,7 @@ function MainLayout({ children }: LayoutProps) {
                 </div>
               ))}
 
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-4 ml-6 border-l border-gray-200 pl-6">
                 {/* <Link to="/dashboard">
                   <Button
                     variant="ghost"
@@ -751,7 +750,7 @@ function MainLayout({ children }: LayoutProps) {
                     <Button
                       variant="ghost"
                       onClick={() => setShowActions(!showActions)}
-                      // className="flex items-center"
+                       className="flex items-center space-x-2 bg-gray-50 hover:bg-gray-100 rounded-lg px-4 py-2"
                     >
                       <div>
                         <span
@@ -784,6 +783,7 @@ function MainLayout({ children }: LayoutProps) {
                           )}
                         </div>
                       </div>
+                      
                     </Button>
                     {showActions && (
                       <div className="absolute right-40 mt-28 w-30 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 z-20">
@@ -1019,126 +1019,155 @@ function MainLayout({ children }: LayoutProps) {
       <main>{children}</main>
 
       {/* Footer */}
-      <footer className="bg-black text-white">
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-            <div>
-              <h3 className="text-sm font-semibold text-gray-200">Resources</h3>
-              <ul className="mt-4 space-y-2">
+       {/* Enhanced Footer */}
+       <footer className="bg-gradient-to-b from-gray-900 to-black text-white">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+          {/* Upper Footer Section */}
+          <div className="grid grid-cols-1 gap-12 md:grid-cols-4 lg:gap-16">
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-white">Resources</h3>
+              <ul className="space-y-3">
                 <li>
                   <Link
                     to="/documents"
-                    className="text-gray-400 hover:text-white transition-colors duration-200"
+                    className="text-gray-300 hover:text-white hover:underline transition-colors duration-200 flex items-center space-x-2"
                   >
-                    All Documents
+                    <FileText className="h-4 w-4" />
+                    <span>All Documents</span>
                   </Link>
                 </li>
                 <li>
                   <Link
                     to="/blog"
-                    className="text-gray-400 hover:text-white transition-colors duration-200"
+                    className="text-gray-300 hover:text-white hover:underline transition-colors duration-200 flex items-center space-x-2"
                   >
-                    Blog
+                    <BookOpen className="h-4 w-4" />
+                    <span>Blog</span>
                   </Link>
                 </li>
               </ul>
             </div>
-            <div>
-              <h3 className="text-sm font-semibold text-gray-200">Legal</h3>
-              <ul className="mt-4 space-y-2">
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-white">Legal</h3>
+              <ul className="space-y-3">
                 <li>
                   <Link
                     to="/terms"
-                    className="text-gray-400 hover:text-white transition-colors duration-200"
+                    className="text-gray-300 hover:text-white hover:underline transition-colors duration-200 flex items-center space-x-2"
                   >
-                    Terms of Service
+                    <Gavel className="h-4 w-4" />
+                    <span>Terms of Service</span>
                   </Link>
                 </li>
                 <li>
                   <Link
                     to="/privacy"
-                    className="text-gray-400 hover:text-white transition-colors duration-200"
+                    className="text-gray-300 hover:text-white hover:underline transition-colors duration-200 flex items-center space-x-2"
                   >
-                    Privacy Policy
+                    <Shield className="h-4 w-4" />
+                    <span>Privacy Policy</span>
                   </Link>
                 </li>
               </ul>
             </div>
-            <div>
-              <h3 className="text-sm font-semibold text-gray-200">Company</h3>
-              <ul className="mt-4 space-y-2">
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-white">Company</h3>
+              <ul className="space-y-3">
                 <li>
                   <Link
                     to="/about"
-                    className="text-gray-400 hover:text-white transition-colors duration-200"
+                    className="text-gray-300 hover:text-white hover:underline transition-colors duration-200 flex items-center space-x-2"
                   >
-                    About Us
+                    <Info className="h-4 w-4" />
+                    <span>About Us</span>
                   </Link>
                 </li>
                 <li>
                   <Link
                     to="/contact-us"
-                    className="text-gray-400 hover:text-white transition-colors duration-200"
+                    className="text-gray-300 hover:text-white hover:underline transition-colors duration-200 flex items-center space-x-2"
                   >
-                    Contact
+                    <Mail className="h-4 w-4" />
+                    <span>Contact</span>
                   </Link>
                 </li>
                 <li>
                   <Link
                     to="/open-access-resources"
-                    className="text-gray-400 hover:text-white transition-colors duration-200"
+                    className="text-gray-300 hover:text-white hover:underline transition-colors duration-200 flex items-center space-x-2"
                   >
-                    Open Access Resources
+                    <Globe className="h-4 w-4" />
+                    <span>Open Access Resources</span>
                   </Link>
                 </li>
               </ul>
             </div>
-            <div>
-              <h3 className="text-sm font-semibold text-gray-200">Follow Us</h3>
-              <div className="mt-4 flex space-x-4">
-                <a
-                  href="#"
-                  className="text-gray-400 hover:text-white transition-colors duration-200"
-                >
-                  <Facebook className="h-5 w-5" />
-                </a>
-                <a
-                  href="#"
-                  className="text-gray-400 hover:text-white transition-colors duration-200"
-                >
-                  <Twitter className="h-5 w-5" />
-                </a>
-                <a
-                  href="#"
-                  className="text-gray-400 hover:text-white transition-colors duration-200"
-                >
-                  <Linkedin className="h-5 w-5" />
-                </a>
-                <a
-                  href="#"
-                  className="text-gray-400 hover:text-white transition-colors duration-200"
-                >
-                  <Instagram className="h-5 w-5" />
-                </a>
+
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-4">Follow Us</h3>
+                <div className="flex space-x-4">
+                  <a
+                    href="#"
+                    className="bg-gray-800 p-2 rounded-full hover:bg-gray-700 transition-colors duration-200"
+                  >
+                    <Facebook className="h-5 w-5 text-gray-300 hover:text-white" />
+                  </a>
+                  <a
+                    href="#"
+                    className="bg-gray-800 p-2 rounded-full hover:bg-gray-700 transition-colors duration-200"
+                  >
+                    <Twitter className="h-5 w-5 text-gray-300 hover:text-white" />
+                  </a>
+                  <a
+                    href="#"
+                    className="bg-gray-800 p-2 rounded-full hover:bg-gray-700 transition-colors duration-200"
+                  >
+                    <Linkedin className="h-5 w-5 text-gray-300 hover:text-white" />
+                  </a>
+                  <a
+                    href="#"
+                    className="bg-gray-800 p-2 rounded-full hover:bg-gray-700 transition-colors duration-200"
+                  >
+                    <Instagram className="h-5 w-5 text-gray-300 hover:text-white" />
+                  </a>
+                </div>
+              </div>
+              
+              <div className="pt-4 border-t border-gray-800">
+                <h3 className="text-lg font-semibold text-white mb-2">Newsletter</h3>
+                <p className="text-sm text-gray-400 mb-4">Stay updated with our latest news and updates.</p>
+                <form className="flex space-x-2">
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    className="flex-1 px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:border-blue-500"
+                  />
+                  <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                    Subscribe
+                  </button>
+                </form>
               </div>
             </div>
           </div>
 
-          {/* Logo Section */}
-          <div className="mt-8 flex flex-col items-center border-t border-gray-800 pt-8">
-            <img
-              src={EduciteLogo}
-              alt="Educite Logo"
-              className="w-auto mb-4"
-              style={{
-                backgroundColor: "#fff",
-                borderRadius: 50,
-                height: 100,
-              }}
-            />
-            <p className="text-center text-sm text-gray-400">
-              © {new Date().getFullYear()} Educite. All rights reserved.
-            </p>
+          {/* Bottom Footer Section */}
+          <div className="mt-12 pt-8 border-t border-gray-800">
+            <div className="flex flex-col items-center justify-between space-y-4 md:flex-row md:space-y-0">
+              <div className="flex items-center space-x-4">
+                <img
+                  src={EduciteLogo}
+                  alt="Educite Logo"
+                  className="h-12 w-auto bg-white rounded-full p-2"
+                />
+                <span className="text-xl font-semibold text-white">Educite</span>
+              </div>
+              <p className="text-sm text-gray-400">
+                © {new Date().getFullYear()} Educite. All rights reserved.
+              </p>
+            </div>
           </div>
         </div>
       </footer>

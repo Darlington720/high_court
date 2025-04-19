@@ -24,6 +24,7 @@ import { PaymentModal } from "../components/PaymentModal";
 import type { Document } from "../types";
 import AppContext from "../context/AppContext";
 import { toast } from "react-toastify";
+import { SEO } from "../components/SEO";
 
 export default function ArchivalMaterials() {
   const navigate = useNavigate();
@@ -153,6 +154,12 @@ export default function ArchivalMaterials() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
+      <SEO
+        title={"Archival Materials | Educite Virtual Library"}
+        description="Access thousands of educational documents, legal resources, and academic materials through Educite's comprehensive virtual library."
+        keywords="judgments, court records, legal documents, legal resources, academic materials, virtual library, legal notice, ordinances"
+        type="article"
+      />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="space-y-8">
           {/* Header */}

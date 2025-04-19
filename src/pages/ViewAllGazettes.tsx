@@ -26,6 +26,7 @@ import { PaymentModal } from "../components/PaymentModal";
 import type { Document } from "../types";
 import AppContext from "../context/AppContext";
 import { toast } from "react-toastify";
+import { SEO } from "../components/SEO";
 
 export default function ViewAllGazettes() {
   const navigate = useNavigate();
@@ -163,6 +164,12 @@ export default function ViewAllGazettes() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
+      <SEO 
+        title="Gazettes | Educite Virtual Library"
+        description="Access official gazettes, legal notices, and government publications. Search through our comprehensive collection of Uganda Gazettes."
+        keywords="uganda gazettes, official gazettes, legal notices, government publications, tender notices, trademark notices"
+        type="article"
+      />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="space-y-8">
           {/* Header */}
