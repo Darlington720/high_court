@@ -94,10 +94,11 @@ export default function AuthForm({ mode }: AuthFormProps) {
         </p>
 
         {error && (
-          <div className="mt-4 flex items-center rounded-lg bg-red-100 p-3 text-red-600">
-            <AlertTriangle className="mr-2 h-5 w-5" />
-            <p className="text-sm">{error}</p>
-          </div>
+        <div className="flex items-center rounded-lg bg-red-100 px-3 py-2 text-red-600">
+        <AlertTriangle className="mr-2 h-5 w-5" />
+        <p className="text-sm">{error}</p>
+      </div>
+      
         )}
 
         {success && (

@@ -432,8 +432,11 @@ export default function Home() {
       )}
       {/* Hero Section with Search */}
       <div className="relative overflow-hidden">
-        {/* Background Image */}
-        <div
+        {/* Background Image with Parallax Effect */}
+        <motion.div
+          initial={{ scale: 1.1 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 1.5 }}
           className="absolute inset-0 z-0"
           style={{
             backgroundImage:
@@ -441,14 +444,14 @@ export default function Home() {
             backgroundPosition: "center",
             backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
+            transform: "translateZ(0)",
           }}
         >
-          {/* Overlay gradient */}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-blue-800/80" />
-        </div>
-
+          {/* Overlay gradient with enhanced depth */}
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/90 via-pink-500/85 to-yellow-400/90 backdrop-blur-sm" />
+          </motion.div>
         {/* Content */}
-        <div className="relative z-10 py-24 sm:py-32">
+        <div className="relative z-5 py-24 sm:py-32">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <motion.div 
               initial={{ opacity: 0, y: 20 }}
@@ -464,7 +467,7 @@ export default function Home() {
               </p>
 
               {/* Enhanced Search Bar */}
-              <div className="mt-12 backdrop-blur-sm bg-white/10 p-4 rounded-2xl">
+              <div className="mt-12 backdrop-blur-sm bg-white/20 p-6 rounded-3xl shadow-2xl transform hover:scale-[1.02] transition-all duration-300">
               <div className="relative">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                     <Search className="h-5 w-5 text-gray-400" />
@@ -602,6 +605,7 @@ export default function Home() {
           </div>
         </div>
       </div>
+  
 
 
       {/* Search Results */}
@@ -619,7 +623,8 @@ export default function Home() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
-            className="rounded-xl bg-white p-6 shadow-lg hover:shadow-xl transition-shadow duration-300"
+            className="rounded-xl bg-white/95 backdrop-blur-sm p-6 shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
+            whileHover={{ scale: 1.02 }}
           >
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center">
@@ -897,11 +902,14 @@ export default function Home() {
             {subscriptionPlans.map((plan) => {
               const IconComponent = plan.icon;
               return (
-                <div
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
                   key={plan.name}
                   className={`
-                    relative flex flex-col rounded-2xl bg-white p-8 shadow-xl ring-1 ring-gray-200
-                    hover:shadow-2xl hover:scale-105 transition-all duration-300
+                    relative flex flex-col rounded-2xl bg-white/95 backdrop-blur-sm p-8 shadow-xl ring-1 ring-gray-200
+                    hover:shadow-2xl hover:scale-105 hover:-translate-y-1 transition-all duration-300
                     ${plan.name === "Gold" ? "lg:shadow-2xl lg:scale-105" : ""}
                   `}
                 >
@@ -982,7 +990,8 @@ export default function Home() {
                   >
                     Get started
                   </Button>
-                </div>
+       
+           </motion.div>
               );
             })}
           </div>

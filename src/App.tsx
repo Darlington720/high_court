@@ -57,6 +57,7 @@ import ViewAllLegalNotices from "./pages/ViewAllLegalNotices";
 import ViewAllOrdinances from "./pages/ViewAllOrdinances";
 import ViewAllProcedureDocs from "./pages/ViewAllProcedureDocs";
 import UserDetails from "./pages/dashboard/UserDetails";
+import DocumentDetails from "./pages/DocumentDetails";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -154,6 +155,11 @@ function App() {
                   <Route
                     path="/dashboard/subscriptions/expired"
                     element={<ExpiredSubscriptions />}
+                  />
+
+                  <Route
+                    path="/document/:documentId"
+                    element={<DocumentDetails />}
                   />
 
                   {/* Document Management Routes */}

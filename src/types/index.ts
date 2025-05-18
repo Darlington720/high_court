@@ -27,6 +27,7 @@ export interface Category {
 }
 
 export interface DocumentFilter {
+  id?: string;
   category?: string;
   title?: string;
   subcategory?: string;

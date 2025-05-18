@@ -99,6 +99,7 @@ export default function ViewAllHansards() {
       navigate("/login");
     } else {
       handlePreview(item);
+      // navigate(`/document/${item.id}`);
     }
   };
 

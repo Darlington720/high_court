@@ -53,7 +53,7 @@ import {
   Mail,
 } from "lucide-react";
 import { Button } from "./ui/Button";
-import EduciteLogo from "../../assets/imgs/educite-logo.png";
+import EduciteLogo from "/assets/imgs/logo3.png";
 import AppContext from "../context/AppContext";
 import { supabase } from "../lib/supabase";
 
@@ -64,6 +64,8 @@ interface LayoutProps {
 function DashboardLayout({ children }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const location = useLocation();
+
+  
 
   const navigationItems = [
     {
@@ -187,7 +189,9 @@ function DashboardLayout({ children }: LayoutProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-50 pt-0">
+    
+
       {/* Mobile Sidebar Toggle */}
       <div className="lg:hidden">
         <div className="fixed inset-0 z-40 flex">
@@ -342,7 +346,7 @@ function DashboardLayout({ children }: LayoutProps) {
       {/* Main Content */}
       <div className="lg:pl-72 flex flex-col">
         {/* Top Navigation */}
-        <div className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-gray-900 border-b border-gray-800">
+        <div className="sticky top-0 z-50 flex-shrink-0 flex h-16 bg-gray-900 border-b border-gray-800">
           <button
             type="button"
             className="px-4 border-r border-gray-800 text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 lg:hidden"
@@ -526,7 +530,7 @@ function MainLayout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation */}
-      <nav className="bg-white shadow-md relative border-b border-gray-100">
+      <nav className="bg-white shadow-md relative border-b border-gray-100 sticky top-0 z-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 justify-between items-center">
             {/* Logo and Brand */}
@@ -575,8 +579,7 @@ function MainLayout({ children }: LayoutProps) {
                   {megaMenuOpen === key && (
                     <div
                       className="absolute left-0 mt-0 w-screen max-w-max bg-white rounded-xl shadow-xl ring-1 ring-black ring-opacity-5 z-50 transform transition-all duration-200 ease-out border border-gray-100"
-                      // onMouseEnter={() => setMegaMenuOpen(key)}
-                      // onMouseLeave={() => setMegaMenuOpen(null)}
+                      onClick={() => setMegaMenuOpen(null)}
                     >
                       <div className="p-6">
                         <div className="flex items-center space-x-2 mb-4 pb-4 border-b-2 border-blue-100 w-200">
@@ -836,6 +839,7 @@ function MainLayout({ children }: LayoutProps) {
             </div>
           </div>
         </div>
+        </nav>
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
@@ -917,60 +921,73 @@ function MainLayout({ children }: LayoutProps) {
                             )
                           )
                         : key === "others" ||
-                          key === "legislation" ||
-                          key == "gazettes" ||
-                          key == "archival"
-                        ? item.subcategories.map((subcategory) => (
-                            <div key={subcategory.name} className="space-y-2">
-                              {subcategory.name == "Procedure Documents" ? (
-                                <>
-                                  <div className="text-gray-400 px-3 py-2">
-                                    {subcategory.name}
-                                  </div>
-                                  <div className="pl-4 space-y-1">
-                                    {subcategory.divisions.map((division) => (
-                                      <Link
-                                        key={division}
-                                        // to={`/judgments?court=${encodeURIComponent(
-                                        //   subcategory.name
-                                        // )}&division=${encodeURIComponent(
-                                        //   division
-                                        // )}`}
-                                        to={`/procedure_documents?subcategory=${division}`}
-                                        onClick={() => setMobileMenuOpen(false)}
-                                        className="block text-gray-300 hover:text-white hover:bg-gray-800 px-3 py-2 rounded-md transition-all duration-200"
-                                      >
-                                        {division}
-                                      </Link>
-                                    ))}
-                                  </div>
-                                </>
-                              ) : (
-                                <Link
+                            key === "legislation" ||
+                            key == "gazettes" ||
+                            key == "archival" ? (
+                            // Others menu with links
+                            <div className="col-span-2 grid grid-cols-auto gap-2">
+                              {item.subcategories.map((subcategory) => (
+                                <div
                                   key={subcategory.name}
-                                  to={subcategory.href}
-                                  onClick={() => setMobileMenuOpen(false)}
-                                  className="block text-gray-300 hover:text-white hover:bg-gray-800 px-3 py-2 rounded-md transition-all duration-200"
+                                  className="space-y-2"
                                 >
-                                  {subcategory.name}
-                                </Link>
-                              )}
+                                  {subcategory.name == "Procedure Documents" ? (
+                                    <>
+                                      <div className="font-medium text-gray-900 px-3 py-2">
+                                        {subcategory.name}
+                                      </div>
+                                      <div className="pl-4 space-y-1">
+                                        {subcategory.divisions.map(
+                                          (division) => (
+                                            <Link
+                                              key={division}
+                                              // to={`/judgments?court=${encodeURIComponent(
+                                              //   subcategory.name
+                                              // )}&division=${encodeURIComponent(
+                                              //   division
+                                              // )}`}
+                                              to={`/procedure_documents?subcategory=${division}`}
+                                              onClick={() => setMobileMenuOpen(false)}
+                                              className="block text-gray-300 hover:text-white hover:bg-gray-800 px-3 py-2 rounded-md transition-all duration-200"
+                                            >
+                                              {division}
+                                            </Link>
+                                          )
+                                        )}
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <Link
+                                      key={subcategory.name}
+                                      to={subcategory.href}
+                                      onClick={() => setMobileMenuOpen(false)}
+                                      className="block text-gray-300 hover:text-white hover:bg-gray-800 px-3 py-2 rounded-md transition-all duration-200"
+                                    >
+                                      {subcategory.name}
+                                    </Link>
+                                  )}
+                                </div>
+                              ))}
                             </div>
-                          ))
-                        : item.subcategories.map((subcategory) => (
-                            <Link
-                              key={subcategory}
-                              to={`/documents?category=${key}&subcategory=${encodeURIComponent(
-                                subcategory
-                              )}`}
-                              onClick={() => setMobileMenuOpen(false)}
-                              className="block text-gray-300 hover:text-white hover:bg-gray-800 px-3 py-2 rounded-md transition-all duration-200"
-                            >
-                              {subcategory}
-                            </Link>
-                          ))}
-                    </div>
-                  )}
+                          ) : (
+                            // Other categories
+                            <div className="col-span-10 grid grid-cols-3 gap-6">
+                              {item.subcategories.map((subcategory) => (
+                                <Link
+                                  key={subcategory}
+                                  to={`/procedure_documents?category=${key}&subcategory=${encodeURIComponent(
+                                    subcategory
+                                  )}`}
+                                  className="text-gray-700 hover:text-blue-600 hover:bg-blue-100/50 px-3 py-2 rounded-md transition-all duration-200 text-sm"
+                                >
+                                  {subcategory}
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                    
+                    )}
                 </div>
               ))}
 
@@ -1011,9 +1028,9 @@ function MainLayout({ children }: LayoutProps) {
                 )}
               </div>
             </div>
-          </div>
+</div>
         )}
-      </nav>
+   
 
       {/* Main Content */}
       <main>{children}</main>
@@ -1160,9 +1177,13 @@ function MainLayout({ children }: LayoutProps) {
                 <img
                   src={EduciteLogo}
                   alt="Educite Logo"
-                  className="h-12 w-auto bg-white rounded-full p-2"
+                  className="bg-white rounded-full p-2"
+                  style={{
+                    width: 100,
+                    height: 100,
+                  }}
                 />
-                <span className="text-xl font-semibold text-white">Educite</span>
+                <span className="text-xl font-semibold text-white">Educite Virtual Library</span>
               </div>
               <p className="text-sm text-gray-400">
                 © {new Date().getFullYear()} Educite. All rights reserved.

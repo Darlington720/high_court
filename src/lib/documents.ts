@@ -210,6 +210,10 @@ export async function fetchDocuments(
     if (filters.subcategory) {
       query = query.eq("subcategory", filters.subcategory);
     }
+
+    if (filters.id) {
+      query = query.eq("id", filters.id);
+    }
     if (filters.status) {
       query = query.eq("metadata->status", filters.status);
     }
