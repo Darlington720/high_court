@@ -24,6 +24,7 @@ import type { Document } from "../types";
 import AppContext from "../context/AppContext";
 import { toast } from "react-toastify";
 import { SEO } from "../components/SEO";
+import { url1 } from "../lib/apiUrls";
 
 export default function ViewAllProcedureDocs() {
   const navigate = useNavigate();
@@ -65,7 +66,7 @@ export default function ViewAllProcedureDocs() {
       // Set loading state for this specific file
       setDownloadingFiles((prev) => ({ ...prev, [fileId]: true }));
 
-      const response = await fetch(fileUrl, {
+      const response = await fetch(`${url1}/api/download?url=${fileUrl}&name=${fileName}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/octet-stream",

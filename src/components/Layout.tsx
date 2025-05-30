@@ -498,9 +498,8 @@ function MainLayout({ children }: LayoutProps) {
           href: "/open-access-resources",
           target: "_",
         },
-
         { name: "Educite Reports", href: "/educite_reports" },
-
+        { name: "Other Documents", href: "/other_documents" },
         {
           name: "Procedure Documents",
           divisions: [

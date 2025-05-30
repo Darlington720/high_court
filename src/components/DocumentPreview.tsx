@@ -7,6 +7,8 @@ import AppContext from "../context/AppContext";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/toolbar/lib/styles/index.css";
 import { supabase } from "../lib/supabase";
+import { url1 } from "../lib/apiUrls";
+import { Download } from "lucide-react";
 
 function DocumentPreview({
   documentUrl,
@@ -29,14 +31,21 @@ function DocumentPreview({
     const { Download, NumberOfPages } = slot;
     return Object.assign({}, slot, {
       Download: () => (
-        <button
-          onClick={() => {
-            saveDocumentDownload(); // Log the download event
-            // Download?.onClick(); // Trigger actual download
-          }}
+        <a
+          href={`${url1}/api/download?url=${documentUrl}&name=${documentDetails.title}`}
+          download={documentDetails.title}
+          onClick={() => saveDocumentDownload()}
+          // className="rpv-core__button"
+          style={{ display: "inline-flex", alignItems: "center", textDecoration: "none" }}
         >
-          <Download />
-        </button>
+          {/* <Download onClick={() => null} /> */}
+          <Download
+            size={18}
+            style={{
+              marginBottom: 6,
+            }}
+          />
+        </a>
       ),
     });
   };

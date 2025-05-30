@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { Layout } from "./components/Layout";
@@ -58,14 +58,33 @@ import ViewAllOrdinances from "./pages/ViewAllOrdinances";
 import ViewAllProcedureDocs from "./pages/ViewAllProcedureDocs";
 import UserDetails from "./pages/dashboard/UserDetails";
 import DocumentDetails from "./pages/DocumentDetails";
+import ViewOtherDocuments from "./pages/ViewOtherDocuments";
+import { pipeline } from "@xenova/transformers";
+import { url1 } from "./lib/apiUrls";
+
 
 function App() {
+  const [isMobile, setIsMobile] = useState(false);
   const [user, setUser] = useState(null);
   const [editDocModalVisible, setEditDocModalVisible] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState(false);
   const [selectedDocumentPreviewVisible, setSelectedDocumentPreviewVisible] =
     useState(false);
   const [documentPreview, setDocumentPreview] = useState(null);
+
+  useEffect(() => {
+    // This runs only on the client
+    const checkMobile = () => {
+      const ua = navigator.userAgent;
+      setIsMobile(/Mobi|Android/i.test(ua));
+    };
+
+    checkMobile();
+
+    // Optional: add a resize listener if you want to react to window resizing
+    // window.addEventListener('resize', checkMobile);
+    // return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // console.log("selectedDocumentPreviewVisible", selectedDocumentPreviewVisible);
   // console.log("documentPreview", documentPreview);
@@ -96,7 +115,7 @@ function App() {
       >
         {selectedDocumentPreviewVisible && (
           <DocumentPreview
-            documentUrl={documentPreview.file_url}
+            documentUrl={isMobile ? `${url1}/api/download?url=${documentPreview.file_url}&name=${documentPreview.title}` : documentPreview.file_url}
             documentDetails={{
               id: documentPreview.id,
               title: documentPreview.title,
@@ -209,6 +228,9 @@ function App() {
                     path="/dashboard/documents/gazettes"
                     element={<ViewGazettes />}
                   />
+
+
+
                   <Route
                     path="/dashboard/documents/acts"
                     element={<ViewActsOfParliament />}
@@ -256,6 +278,7 @@ function App() {
 
                   {/* Public View All Routes */}
                   <Route path="/judgments" element={<ViewAllJudgments />} />
+                  <Route path="/other_documents" element={<ViewOtherDocuments />} />
                   <Route
                     path="/procedure_documents"
                     element={<ViewAllProcedureDocs />}

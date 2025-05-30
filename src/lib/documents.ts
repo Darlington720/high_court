@@ -1,6 +1,7 @@
 import { supabase } from "./supabase";
 import type { Document, DocumentFilter, DocumentSort } from "../types";
 import { getDocumentTypeFromExtension, isValidDocumentType } from "./constants";
+import { url1 } from "./apiUrls";
 
 export async function uploadDocument(
   file: File,
@@ -9,7 +10,6 @@ export async function uploadDocument(
   metadata: Partial<Document["metadata"]> = {}
 ) {
   try {
-    console.log("running this block....");
     // Validate file type
     const documentType = getDocumentTypeFromExtension(file.name);
     if (!isValidDocumentType(documentType)) {
@@ -17,8 +17,6 @@ export async function uploadDocument(
         "Invalid document type. Supported formats: PDF, DOC, DOCX, TXT, RTF, XLS, XLSX"
       );
     }
-
-    console.log("documentType", documentType);
 
     // Determine the correct bucket based on category
     const bucketMap: Record<string, string> = {
@@ -32,10 +30,10 @@ export async function uploadDocument(
       "Procedure Documents": "procedure_documents",
       "Legal Notices": "legal_notices",
       Ordinances: "ordinances",
+      Others: "others",
     };
 
     const bucketId = bucketMap[category];
-    console.log("bucket id", bucketId);
     if (!bucketId) {
       throw new Error(`Invalid document category: ${category}`);
     }
@@ -46,7 +44,6 @@ export async function uploadDocument(
       error: userError,
     } = await supabase.auth.getUser();
 
-    console.log("user", user);
     if (userError) throw userError;
     if (!user) throw new Error("User not authenticated");
 
@@ -63,8 +60,6 @@ export async function uploadDocument(
     // if (userData.role !== "admin") {
     //   throw new Error("Only administrators can upload documents");
     // }
-
-    console.log("we are here now...");
 
     // Generate unique filename
     const fileExt = file.name.split(".").pop();
@@ -102,7 +97,7 @@ export async function uploadDocument(
     } = supabase.storage.from(bucketId).getPublicUrl(uploadData.path);
 
     // Create document record
-    const { error: dbError } = await supabase.from("documents").insert({
+    const { data: newDoc, error: dbError } = await supabase.from("documents").insert({
       title: file.name,
       category,
       subcategory,
@@ -118,7 +113,7 @@ export async function uploadDocument(
         uploadDate: new Date().toISOString(),
         ...metadata,
       },
-    });
+    }).select();
 
     if (dbError) {
       console.error("Database insert error:", dbError);
@@ -126,6 +121,16 @@ export async function uploadDocument(
       await supabase.storage.from(bucketId).remove([filePath]);
       throw new Error(`Failed to save document: ${dbError.message}`);
     }
+
+    console.log("newDoc", newDoc);
+
+    await fetch(`${url1}/api/embed_document`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        document_id: newDoc[0].id,
+      }),
+    });
 
     return { publicUrl, path: filePath };
   } catch (error) {
@@ -188,6 +193,38 @@ export async function uploadDocument(
 //     console.error("Error fetching documents:", error);
 //     throw error;
 //   }
+// }
+
+// export async function uploadDocument(
+//   file: File,
+//   category: string,
+//   subcategory: string,
+//   metadata: Partial<Document["metadata"]> = {}
+// ) {
+//   const session = await supabase.auth.getSession();
+//   const accessToken = session.data.session?.access_token;
+
+//   if (!accessToken) throw new Error("No access token found");
+
+//   const formData = new FormData();
+//   formData.append("file", file);
+//   formData.append("category", category);
+//   formData.append("subcategory", subcategory);
+//   formData.append("metadata", JSON.stringify(metadata));
+
+//   const response = await fetch(`${url1}/api/upload_document`, {
+//     method: "POST",
+//     body: formData,
+//     headers: {
+//       Authorization: `Bearer ${accessToken}`,
+//     },
+//   });
+
+//   if (!response.ok) {
+//     throw new Error("Failed to upload document");
+//   }
+
+//   return await response.json();
 // }
 
 export async function fetchDocuments(

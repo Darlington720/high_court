@@ -38,7 +38,9 @@ import { SEO } from "../components/SEO";
 import { Helmet } from "react-helmet-async";
 import { logSearch } from "../lib/search";
 import { motion } from "framer-motion";
-import "../styles/home.css"
+import "../styles/home.css";
+import embedQuery from "../utils/embedQuery";
+import { url1 } from "../lib/apiUrls";
 
 // Mock data for recent sections
 const recentData = {
@@ -216,6 +218,8 @@ export default function Home() {
   >(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [loadingDocuments, setLoadingDocuments] = useState(false);
+  const [loadingMoreResults, setLoadingMoreResults] = useState(false);
+  const [page, setPage] = useState(1);
   const [recomendations, setRecomendations] = useState([]);
   const appContext = useContext(AppContext);
 
@@ -223,17 +227,27 @@ export default function Home() {
     // TODO: Implement actual search when Supabase is connected
 
     if (searchTerm == "") return;
-
+    setPage(1)
     setLoadingDocuments(true);
     // let { data: documents, error } = await supabase
     //   .from("documents")
     //   .select("*")
     //   .ilike("title", `%${searchTerm}%`);
     const startTime = performance.now();
-    let { data: documents, error } = await supabase.rpc(
-      "fuzzy_search_documents",
-      { search_query: searchTerm }
+    // let { data: documents, error } = await supabase.rpc(
+    //   "fuzzy_search_documents",
+    //   { search_query: searchTerm }
+    // );
+
+    const { data: results, error } = await supabase.functions.invoke(
+      "bright-processor",
+      {
+        body: { search: searchTerm, limit: 10, page: page },
+      }
     );
+
+    // console.log("documents", documents);
+    let documents = results?.result || [];
     const searchTime = (performance.now() - startTime) / 1000;
 
     await logSearch(
@@ -244,7 +258,33 @@ export default function Home() {
     );
     // console.log("documents", documents);
     setLoadingDocuments(false);
+    setRecomendations([]);
+    if (documents?.length == 0) {
+      toast.info("No documents match your search.");
+    }
 
+    setSearchResults(documents);
+  };
+
+  const loadPaginationResultsFromSearch = async () => {
+    // TODO: Implement actual search when Supabase is connected
+
+    if (searchTerm == "") return;
+
+    setLoadingMoreResults(true);
+
+    const { data: results, error } = await supabase.functions.invoke(
+      "bright-processor",
+      {
+        body: { search: searchTerm, limit: 10, page: page },
+      }
+    );
+
+    // console.log("documents", documents);
+    let documents = results?.result || [];
+    // console.log("documents", documents);
+    setLoadingMoreResults(false);
+    setRecomendations([]);
     if (documents?.length == 0) {
       toast.info("No documents match your search.");
     }
@@ -270,7 +310,7 @@ export default function Home() {
       // Set loading state for this specific file
       setDownloadingFiles((prev) => ({ ...prev, [fileId]: true }));
 
-      const response = await fetch(fileUrl, {
+      const response = await fetch(`${url1}/api/download?url=${fileUrl}&name=${fileName}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/octet-stream",
@@ -356,6 +396,12 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    if (page >= 1) {
+      loadPaginationResultsFromSearch();
+    }
+  }, [page]);
+
+  useEffect(() => {
     if (searchTerm.trim() === "") {
       setRecomendations([]);
       return;
@@ -366,6 +412,10 @@ export default function Home() {
     // Debounced search to prevent excessive API calls
     const delayedSearch = debounce(async () => {
       setLoadingDocuments(true);
+      const session = await supabase.auth.getSession();
+      const accessToken = session.data.session?.access_token;
+
+      if (!accessToken) throw new Error("No access token found");
 
       // let { data: documents, error } = await supabase
       //   .from("documents")
@@ -373,9 +423,26 @@ export default function Home() {
       //   .ilike("title", `%${searchTerm}%`); // Case-insensitive partial match
 
       const startTime = performance.now();
-      let { data: documents, error } = await supabase
-        .rpc("fuzzy_search_documents", { search_query: searchTerm })
-        .limit(10);
+      // let { data: documents, error } = await supabase
+      //   .rpc("fuzzy_search_documents", { search_query: searchTerm })
+      //   .limit(10);
+
+      // const { data: documents, error } = await supabase.rpc("match_document_chunks_with_titles", {
+      //   query_embedding: embedding,
+      //   match_count: 10,
+      //   match_threshold: 0.75
+      // });
+
+      const { data: results, error } = await supabase.functions.invoke(
+        "bright-processor",
+        {
+          body: { search: searchTerm, page: 1 },
+        }
+      );
+
+      // console.log("documents", documents);
+      let documents = results?.result || [];
+
       const searchTime = (performance.now() - startTime) / 1000;
 
       await logSearch(
@@ -448,27 +515,29 @@ export default function Home() {
           }}
         >
           {/* Overlay gradient with enhanced depth */}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/90 via-pink-500/85 to-yellow-400/90 backdrop-blur-sm" />
-          </motion.div>
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-blue-800/80 backdrop-blur-sm" />
+        </motion.div>
         {/* Content */}
         <div className="relative z-5 py-24 sm:py-32">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               className="mx-auto max-w-2xl text-center"
             >
               <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
-                Welcome to <span className="text-blue-300">Educite</span> Virtual Library
+                Welcome to <span className="text-blue-300">Educite</span>{" "}
+                Virtual Library
               </h1>
               <p className="mt-6 text-lg leading-8 text-blue-100">
-                Your comprehensive legal resource hub. Access thousands of documents instantly.
+                Your comprehensive legal resource hub. Access thousands of
+                documents instantly.
               </p>
 
               {/* Enhanced Search Bar */}
               <div className="mt-12 backdrop-blur-sm bg-white/20 p-6 rounded-3xl shadow-2xl transform hover:scale-[1.02] transition-all duration-300">
-              <div className="relative">
+                <div className="relative">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                     <Search className="h-5 w-5 text-gray-400" />
                   </div>
@@ -594,6 +663,8 @@ export default function Home() {
                         <Loader className="mr-2 h-5 w-5 animate-spin" />
                         {"Searching Documents..."}
                       </>
+                    ) : recomendations.length > 0 ? (
+                      "Load More Documents"
                     ) : (
                       "Search Documents"
                     )}
@@ -601,17 +672,19 @@ export default function Home() {
                 </div>
               </div>
             </motion.div>
-            
           </div>
         </div>
       </div>
-  
-
 
       {/* Search Results */}
       {searchResults && (
         <div className="mx-auto max-w-7xl px-6 py-8">
-          <SearchResults results={searchResults} />
+          <SearchResults
+            results={searchResults}
+            onClickNext={(currentPage) => setPage(currentPage)}
+            onClickPrev={(currentPage) => setPage(currentPage)}
+            loading={loadingMoreResults}
+          />
         </div>
       )}
 
@@ -619,7 +692,7 @@ export default function Home() {
       <div className="mx-auto max-w-7xl px-6 py-12">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           {/* Recent Judgments */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
@@ -647,7 +720,7 @@ export default function Home() {
               {judgements.map((item: any) => (
                 <div key={item.id} className="py-4">
                   <h3
-                    className="text-sm font-medium text-gray-900 pointer"
+                    className="text-md font-medium text-gray-900 pointer"
                     style={{
                       cursor: "pointer",
                     }}
@@ -688,16 +761,16 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            </motion.div>
+          </motion.div>
 
-            <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
             className="rounded-xl bg-white p-6 shadow-lg hover:shadow-xl transition-shadow duration-300"
           >
             <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center">
+              <div className="flex items-center">
                 <div className="rounded-lg bg-purple-100 p-3">
                   <FileText className="h-6 w-6 text-purple-600" />
                 </div>
@@ -717,7 +790,7 @@ export default function Home() {
               {legislation.map((item) => (
                 <div key={item.id} className="py-4">
                   <h3
-                    className="text-sm font-medium text-gray-900"
+                    className="text-md font-medium text-gray-900"
                     style={{
                       cursor: "pointer",
                     }}
@@ -754,7 +827,7 @@ export default function Home() {
                 </div>
               ))}
             </div>
-          </motion.div >
+          </motion.div>
 
           {/* Recent Hansards */}
           <div className="rounded-lg bg-white p-6 shadow-md">
@@ -779,7 +852,7 @@ export default function Home() {
               {hansards.map((item) => (
                 <div key={item.id} className="py-4">
                   <h3
-                    className="text-sm font-medium text-gray-900"
+                    className="text-md font-medium text-gray-900"
                     style={{
                       cursor: "pointer",
                     }}
@@ -841,7 +914,7 @@ export default function Home() {
               {gazettes.map((item) => (
                 <div key={item.id} className="py-4">
                   <h3
-                    className="text-sm font-medium text-gray-900"
+                    className="text-md font-medium text-gray-900"
                     style={{
                       cursor: "pointer",
                     }}
@@ -885,7 +958,7 @@ export default function Home() {
       {/* Subscription Packages */}
       <div className="bg-gradient-to-b from-gray-50 to-white py-24 sm:py-16">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="mx-auto max-w-2xl text-center"
@@ -897,7 +970,7 @@ export default function Home() {
               Select the perfect plan for your needs, from individual access to
               enterprise solutions
             </p>
-            </motion.div>
+          </motion.div>
           <div className="mx-auto mt-16 grid max-w-lg grid-cols-1 gap-6 sm:mt-20 lg:max-w-none lg:grid-cols-4">
             {subscriptionPlans.map((plan) => {
               const IconComponent = plan.icon;
@@ -945,7 +1018,7 @@ export default function Home() {
                       {plan.name}
                     </h3>
                   </div>
-                  <p className="mt-4 text-sm leading-6 text-gray-600">
+                  <p className="mt-4 text-md  leading-6 text-gray-600">
                     {plan.description}
                   </p>
                   {plan.prices.map((price: any, i: number) => (
@@ -955,20 +1028,20 @@ export default function Home() {
                         {price.price.toLocaleString()}
                       </span>
                       {price.users ? (
-                        <span className="text-sm font-semibold leading-6 text-gray-600">
+                        <span className="text-md font-semibold leading-6 text-gray-600">
                           / {price.users} Users / {price.duration}
                         </span>
                       ) : (
-                        <span className="text-sm font-semibold leading-6 text-gray-600">
+                        <span className="text-md  font-semibold leading-6 text-gray-600">
                           / {price.duration}
                         </span>
                       )}
                     </div>
                   ))}
-                  <div className="mt-8 text-sm font-medium text-gray-500">
+                  <div className="mt-8 text-md  font-medium text-gray-500">
                     Best for: {plan.bestFor}
                   </div>
-                  <ul className="mt-8 space-y-3 text-sm leading-6 text-gray-600">
+                  <ul className="mt-8 space-y-3 text-md  leading-6 text-gray-600">
                     {plan.features.map((feature) => (
                       <li key={feature} className="flex gap-x-3">
                         <Check className="h-5 w-5 flex-none text-blue-600" />
@@ -990,8 +1063,7 @@ export default function Home() {
                   >
                     Get started
                   </Button>
-       
-           </motion.div>
+                </motion.div>
               );
             })}
           </div>

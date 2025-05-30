@@ -286,6 +286,7 @@ export const DOCUMENT_CATEGORIES = {
     "Practice Notes",
     "Legal Updates",
   ],
+  "Others": ["Others"],
 };
 
 export const DOCUMENT_TYPES = {

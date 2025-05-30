@@ -1,9 +1,10 @@
-import { FileText, Download, ExternalLink } from "lucide-react";
+import { FileText, Download, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./ui/Button";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import AppContext from "../context/AppContext";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { Spin } from "antd";
 
 interface SearchResult {
   id: string;
@@ -16,11 +17,15 @@ interface SearchResult {
 
 interface SearchResultsProps {
   results: SearchResult[];
+  onClickNext: (currentPage: number) => void;
+  onClickPrev: (currentPage: number) => void;
+  loading: boolean;
 }
 
-export function SearchResults({ results }: SearchResultsProps) {
+export function SearchResults({ results, onClickNext, onClickPrev, loading = false }: SearchResultsProps) {
   const navigate = useNavigate();
   const appContext = useContext(AppContext);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // const handlePreview = (fileUrl: string) => {
   //   window.open(fileUrl, "_blank");
@@ -52,6 +57,8 @@ export function SearchResults({ results }: SearchResultsProps) {
     }
   };
 
+  const totalPages = results.length > 0 ? Math.ceil(results[0].total_count / 10) : 1;
+
   return (
     <div className="overflow-hidden rounded-lg bg-white shadow">
       <div className="px-4 py-5 sm:px-6">
@@ -60,12 +67,14 @@ export function SearchResults({ results }: SearchResultsProps) {
         </h3>
         <p className="mt-1 text-sm text-gray-500">
           {results.length > 0
-            ? `Found ${results.length} documents`
+            ? `Found ${results.length > 0 ?  parseInt(results[0].total_count).toLocaleString() : 0} documents`
             : "No documents found."}
         </p>
       </div>
 
       {results.length > 0 ? (
+        <>
+        <Spin spinning={loading} tip="Loading documents...">
         <div className="border-t border-gray-200">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -98,7 +107,7 @@ export function SearchResults({ results }: SearchResultsProps) {
                         <FileText className="h-5 w-5 text-gray-400 mr-3" />
                         <div>
                           <div
-                            className="text-sm font-medium text-gray-900"
+                            className="text-md font-medium text-gray-900"
                             style={{
                               cursor: "pointer",
                             }}
@@ -147,6 +156,43 @@ export function SearchResults({ results }: SearchResultsProps) {
             </table>
           </div>
         </div>
+
+        </Spin>
+
+         {/* Pagination */}
+         {totalPages > 0 && (
+                  <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                        onClickPrev(currentPage)
+                      }
+                      }
+                      disabled={currentPage === 1}
+                    >
+                      <ChevronLeft className="mr-2 h-4 w-4" />
+                      Previous
+                    </Button>
+                    <span className="text-sm text-gray-700">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                        onClickNext(currentPage)
+                      }
+                      }
+                      disabled={currentPage === totalPages}
+                    >
+                      Next
+                      <ChevronRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+        </>
+
       ) : (
         <div className="p-6 text-center text-gray-500">
           No documents match your search.

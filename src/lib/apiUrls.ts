@@ -1,0 +1,1 @@
+export const url1 = "https://educitevl.edu.ug:8000"

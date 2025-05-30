@@ -8,17 +8,17 @@
   --font-serif: 'Merriweather', Georgia, 'Times New Roman', serif;
   --font-sans: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   
+  /* --text-base: 1rem; */
   /* Font Sizes */
-  /* --text-xs: 0.75rem;
+   /* --text-xs: 0.75rem;
   --text-sm: 0.875rem;
-  --text-base: 1rem;
   --text-lg: 1.125rem;
   --text-xl: 1.25rem;
   --text-2xl: 1.5rem;
   --text-3xl: 1.875rem;
   --text-4xl: 2.25rem;
   --text-5xl: 3rem;
-  --text-6xl: 3.75rem; */
+  --text-6xl: 3.75rem;  */
   
   /* Line Heights */
   /* --leading-none: 1;
@@ -29,30 +29,30 @@
   --leading-loose: 2; */
   
   /* Letter Spacing */
-  --tracking-tighter: -0.05em;
+  /* --tracking-tighter: -0.05em;
   --tracking-tight: -0.025em;
   --tracking-normal: 0;
   --tracking-wide: 0.025em;
-  --tracking-wider: 0.05em;
+  --tracking-wider: 0.05em; */
   
   /* Font Weights */
-  --weight-light: 300;
+  /* --weight-light: 300;
   --weight-normal: 400;
   --weight-medium: 500;
   --weight-semibold: 600;
   --weight-bold: 700;
-  --weight-black: 900;
+  --weight-black: 900; */
 }
 
 /* Global Text Styles */
 body {
   font-family: var(--font-sans);
   font-size: var(--text-base);
-  line-height: var(--line-height-base);
+ /* line-height: var(--line-height-base);
   color: #2c2c2c;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  -moz-osx-font-smoothing: grayscale; */
 }
 
 /* Headings */
