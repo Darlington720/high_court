@@ -136,11 +136,16 @@ export default function ViewAllHansards() {
   };
 
   const filteredDocuments = documents.filter((doc) => {
-    const matchesSearch =
-      doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doc.metadata.keywords?.some((k) =>
-        k.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+    const term = searchTerm.toLowerCase().trim();
+    const tokens = term.split(/\s+/); // split into ['sebunya', 'a']
+
+    const title = doc.title.toLowerCase();
+    const keywords = (doc.metadata.keywords || []).map((k) => k.toLowerCase());
+
+    const matchesSearch = tokens.every(
+      (token) =>
+        title.includes(token) || keywords.some((k) => k.includes(token))
+    );
 
     const matchesYear = !filters.year || doc.subcategory.includes(filters.year);
     const matchesSession =

@@ -28,24 +28,91 @@ function DocumentPreview({
   const { Toolbar, renderDefaultToolbar } = toolbarPluginInstance;
 
   const transform = (slot) => {
-    const { Download, NumberOfPages } = slot;
+    // const { Download, NumberOfPages } = slot;
     return Object.assign({}, slot, {
       Download: () => (
         <a
           href={`${url1}/api/download?url=${documentUrl}&name=${documentDetails.title}`}
+          target="_blank"
           download={documentDetails.title}
           onClick={() => saveDocumentDownload()}
-          // className="rpv-core__button"
-          style={{ display: "inline-flex", alignItems: "center", textDecoration: "none" }}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            textDecoration: "none",
+          }}
         >
-          {/* <Download onClick={() => null} /> */}
-          <Download
-            size={18}
+          <button
+            // onClick={(e) => {
+            //   e.preventDefault(); // prevent default behavior
+            //   console.log("Custom download handler");
+            // }}
             style={{
-              marginBottom: 6,
+              display: "inline-flex",
+              alignItems: "center",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              padding: 0,
             }}
-          />
+            title="Download"
+          >
+            <svg
+              height="26"
+              viewBox="0 0 24 24"
+              width="20"
+              // fill=""
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ marginBottom: 4 }}
+            >
+              <path d="M5 20h14v-2H5m14-9h-4V3H9v6H5l7 7 7-7z" />
+            </svg>
+          </button>
         </a>
+      ),
+      DownloadMenuItem: () => (
+        <div style={{ padding: "0rem" }}>
+          <a
+            href={`${url1}/api/download?url=${documentUrl}&name=${documentDetails.title}`}
+            target="_blank"
+            download={documentDetails.title}
+            onClick={() => saveDocumentDownload()}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              textDecoration: "none",
+            }}
+          >
+            <div
+              // onClick={() => console.log("Mobile: custom download")}
+              style={{
+                paddingLeft: "1rem",
+                display: "flex",
+                alignItems: "center",
+                cursor: "pointer",
+              }}
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ marginRight: "0.5rem" }}
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              Download
+            </div>
+          </a>
+        </div>
       ),
     });
   };

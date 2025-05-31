@@ -234,20 +234,32 @@ export default function Home() {
     //   .select("*")
     //   .ilike("title", `%${searchTerm}%`);
     const startTime = performance.now();
-    // let { data: documents, error } = await supabase.rpc(
-    //   "fuzzy_search_documents",
-    //   { search_query: searchTerm }
-    // );
-
-    const { data: results, error } = await supabase.functions.invoke(
-      "bright-processor",
-      {
-        body: { search: searchTerm, limit: 10, page: page },
-      }
+    let { data: documents, error } = await supabase.rpc(
+      "fuzzy_search_documents",
+      { search_query: searchTerm }
     );
 
-    // console.log("documents", documents);
-    let documents = results?.result || [];
+    // const { data: results, error } = await supabase.functions.invoke(
+    //   "bright-processor",
+    //   {
+    //     body: { search: searchTerm, limit: 10, page: page },
+    //   }
+    // );
+
+    // const response = await fetch(`${url1}/api/semantic_search?search=${searchTerm}&page=${page}&limit=10`, {
+    //   method: "GET",
+    //   headers: {
+    //     "Content-Type": "application/octet-stream",
+    //   },
+    // });
+
+    // if (!response.ok) {
+    //   throw new Error(`Failed to fetch file: ${response.statusText}`);
+    // }
+    // const _results = await response.json();
+
+    // let documents = _results?.results || [];
+
     const searchTime = (performance.now() - startTime) / 1000;
 
     await logSearch(
@@ -412,10 +424,7 @@ export default function Home() {
     // Debounced search to prevent excessive API calls
     const delayedSearch = debounce(async () => {
       setLoadingDocuments(true);
-      const session = await supabase.auth.getSession();
-      const accessToken = session.data.session?.access_token;
-
-      if (!accessToken) throw new Error("No access token found");
+    
 
       // let { data: documents, error } = await supabase
       //   .from("documents")
@@ -423,9 +432,9 @@ export default function Home() {
       //   .ilike("title", `%${searchTerm}%`); // Case-insensitive partial match
 
       const startTime = performance.now();
-      // let { data: documents, error } = await supabase
-      //   .rpc("fuzzy_search_documents", { search_query: searchTerm })
-      //   .limit(10);
+      let { data: documents, error } = await supabase
+        .rpc("fuzzy_search_documents", { search_query: searchTerm })
+        .limit(10);
 
       // const { data: documents, error } = await supabase.rpc("match_document_chunks_with_titles", {
       //   query_embedding: embedding,
@@ -433,15 +442,27 @@ export default function Home() {
       //   match_threshold: 0.75
       // });
 
-      const { data: results, error } = await supabase.functions.invoke(
-        "bright-processor",
-        {
-          body: { search: searchTerm, page: 1 },
-        }
-      );
+      // const { data: results, error } = await supabase.functions.invoke(
+      //   "bright-processor",
+      //   {
+      //     body: { search: searchTerm, page: 1 },
+      //   }
+      // );
 
-      // console.log("documents", documents);
-      let documents = results?.result || [];
+      // const response = await fetch(`${url1}/api/semantic_search?search=${searchTerm}&page=1&limit=3`, {
+      //   method: "GET",
+      //   headers: {
+      //     "Content-Type": "application/octet-stream",
+      //   },
+      // });
+
+      // if (!response.ok) {
+      //   throw new Error(`Failed to fetch file: ${response.statusText}`);
+      // }
+      // const _results = await response.json();
+
+
+      // let documents = _results?.results || [];
 
       const searchTime = (performance.now() - startTime) / 1000;
 
@@ -515,7 +536,7 @@ export default function Home() {
           }}
         >
           {/* Overlay gradient with enhanced depth */}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-blue-800/80 backdrop-blur-sm" />
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-blue-800/80 backdrop-blur-none" />
         </motion.div>
         {/* Content */}
         <div className="relative z-5 py-24 sm:py-32">

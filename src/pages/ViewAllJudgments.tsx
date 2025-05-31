@@ -66,12 +66,15 @@ export default function ViewAllJudgments() {
       // Set loading state for this specific file
       setDownloadingFiles((prev) => ({ ...prev, [fileId]: true }));
 
-      const response = await fetch(`${url1}/api/download?url=${fileUrl}&name=${fileName}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/octet-stream",
-        },
-      });
+      const response = await fetch(
+        `${url1}/api/download?url=${fileUrl}&name=${fileName}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/octet-stream",
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`Failed to fetch file: ${response.statusText}`);
@@ -138,12 +141,16 @@ export default function ViewAllJudgments() {
   };
 
   const filteredDocuments = documents.filter((doc) => {
-    const matchesSearch =
-      doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doc.metadata.keywords?.some((k) =>
-        k.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+    const term = searchTerm.toLowerCase().trim();
+    const tokens = term.split(/\s+/); // split into ['sebunya', 'a']
 
+    const title = doc.title.toLowerCase();
+    const keywords = (doc.metadata.keywords || []).map((k) => k.toLowerCase());
+
+    const matchesSearch = tokens.every(
+      (token) =>
+        title.includes(token) || keywords.some((k) => k.includes(token))
+    );
     const matchesCourt =
       !filters.court ||
       doc.subcategory === filters.court ||
@@ -172,14 +179,17 @@ export default function ViewAllJudgments() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
-    <SEO 
-        title={court ? `${court} Judgements | Educite Virtual Library` : "Judgements | Educite Virtual Library"}
+      <SEO
+        title={
+          court
+            ? `${court} Judgements | Educite Virtual Library`
+            : "Judgements | Educite Virtual Library"
+        }
         description="Access thousands of educational documents, legal resources, and academic materials through Educite's comprehensive virtual library."
         keywords="judgments, court records, legal documents, legal resources, academic materials, virtual library"
         type="article"
       />
 
-      
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="space-y-8">
           {/* Header */}
