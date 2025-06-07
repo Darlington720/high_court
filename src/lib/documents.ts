@@ -31,6 +31,7 @@ export async function uploadDocument(
       "Legal Notices": "legal_notices",
       Ordinances: "ordinances",
       Others: "others",
+      "Educite Reports": "educite-reports",
     };
 
     const bucketId = bucketMap[category];
@@ -124,12 +125,10 @@ export async function uploadDocument(
 
     console.log("newDoc", newDoc);
 
-    await fetch(`${url1}/api/embed_document`, {
+    await fetch(`${url1}/api/store_document_fts`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        document_id: newDoc[0].id,
-      }),
+      body: JSON.stringify(newDoc[0]),
     });
 
     return { publicUrl, path: filePath };

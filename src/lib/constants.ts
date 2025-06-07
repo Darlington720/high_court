@@ -286,8 +286,10 @@ export const DOCUMENT_CATEGORIES = {
     "Practice Notes",
     "Legal Updates",
   ],
-  "Others": ["Others"],
+  "Others": ["Other Documents"],
+  "Educite Reports": ["Educite Reports"],
 };
+
 
 export const DOCUMENT_TYPES = {
   "application/pdf": {

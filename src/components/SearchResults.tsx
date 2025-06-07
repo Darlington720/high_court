@@ -57,7 +57,7 @@ export function SearchResults({ results, onClickNext, onClickPrev, loading = fal
     }
   };
 
-  const totalPages = results.length > 0 ? Math.ceil(results[0].total_count / 10) : 1;
+  const totalPages = results.length > 0 ? Math.ceil(results[0].total_rows / 10) : 1;
 
   return (
     <div className="overflow-hidden rounded-lg bg-white shadow">
@@ -67,7 +67,7 @@ export function SearchResults({ results, onClickNext, onClickPrev, loading = fal
         </h3>
         <p className="mt-1 text-sm text-gray-500">
           {results.length > 0
-            ? `Found ${results.length > 0 ?  parseInt(results[0].total_count).toLocaleString() : 0} documents`
+            ? `Found ${results.length > 0 ?  parseInt(results[0].total_rows).toLocaleString() : 0} documents`
             : "No documents found."}
         </p>
       </div>

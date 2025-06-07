@@ -39,8 +39,8 @@ import { Helmet } from "react-helmet-async";
 import { logSearch } from "../lib/search";
 import { motion } from "framer-motion";
 import "../styles/home.css";
-import embedQuery from "../utils/embedQuery";
 import { url1 } from "../lib/apiUrls";
+import { Modal } from "antd";
 
 // Mock data for recent sections
 const recentData = {
@@ -222,22 +222,32 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const [recomendations, setRecomendations] = useState([]);
   const appContext = useContext(AppContext);
+  const [modal, contextHolder] = Modal.useModal();
 
   const handleSearch = async () => {
     // TODO: Implement actual search when Supabase is connected
 
-    if (searchTerm == "") return;
-    setPage(1)
+    if (searchTerm == "") {
+      return;
+    };
+    setPage(1);
+   
     setLoadingDocuments(true);
     // let { data: documents, error } = await supabase
     //   .from("documents")
     //   .select("*")
     //   .ilike("title", `%${searchTerm}%`);
     const startTime = performance.now();
-    let { data: documents, error } = await supabase.rpc(
-      "fuzzy_search_documents",
-      { search_query: searchTerm }
-    );
+    // let { data: documents, error } = await supabase.rpc(
+    //   "fuzzy_search_documents",
+    //   { search_query: searchTerm }
+    // );
+
+    const { data: documents, error: error } = await supabase.rpc("search_documents_v2", {
+      query: searchTerm,
+      page: page,
+      page_size: 10,
+    });
 
     // const { data: results, error } = await supabase.functions.invoke(
     //   "bright-processor",
@@ -265,15 +275,23 @@ export default function Home() {
     await logSearch(
       searchTerm,
       appContext?.user?.id,
-      documents.length,
+      documents?.length || 0,
       searchTime
     );
     // console.log("documents", documents);
     setLoadingDocuments(false);
     setRecomendations([]);
-    if (documents?.length == 0) {
-      toast.info("No documents match your search.");
-    }
+
+      if (documents?.length == 0) {
+        modal.info({
+          title: 'No Results Found',
+          content: (
+            "Your search did not match any documents. Please try different keywords."
+          ),
+          centered: true
+        });
+      }
+    
 
     setSearchResults(documents);
   };
@@ -285,15 +303,12 @@ export default function Home() {
 
     setLoadingMoreResults(true);
 
-    const { data: results, error } = await supabase.functions.invoke(
-      "bright-processor",
-      {
-        body: { search: searchTerm, limit: 10, page: page },
-      }
-    );
+    const { data: documents, error: error } = await supabase.rpc("search_documents_v2", {
+      query: searchTerm,
+      page: page,
+      page_size: 10,
+    });
 
-    // console.log("documents", documents);
-    let documents = results?.result || [];
     // console.log("documents", documents);
     setLoadingMoreResults(false);
     setRecomendations([]);
@@ -322,12 +337,15 @@ export default function Home() {
       // Set loading state for this specific file
       setDownloadingFiles((prev) => ({ ...prev, [fileId]: true }));
 
-      const response = await fetch(`${url1}/api/download?url=${fileUrl}&name=${fileName}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/octet-stream",
-        },
-      });
+      const response = await fetch(
+        `${url1}/api/download?url=${fileUrl}&name=${fileName}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/octet-stream",
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`Failed to fetch file: ${response.statusText}`);
@@ -408,9 +426,9 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (page >= 1) {
+    // if (page != 1) {
       loadPaginationResultsFromSearch();
-    }
+    // }
   }, [page]);
 
   useEffect(() => {
@@ -424,7 +442,6 @@ export default function Home() {
     // Debounced search to prevent excessive API calls
     const delayedSearch = debounce(async () => {
       setLoadingDocuments(true);
-    
 
       // let { data: documents, error } = await supabase
       //   .from("documents")
@@ -432,55 +449,57 @@ export default function Home() {
       //   .ilike("title", `%${searchTerm}%`); // Case-insensitive partial match
 
       const startTime = performance.now();
-      let { data: documents, error } = await supabase
-        .rpc("fuzzy_search_documents", { search_query: searchTerm })
-        .limit(10);
+      // let { data: documents, error } = await supabase
+      //   .rpc("fuzzy_search_documents", { search_query: searchTerm })
+      //   .limit(10);
 
-      // const { data: documents, error } = await supabase.rpc("match_document_chunks_with_titles", {
-      //   query_embedding: embedding,
-      //   match_count: 10,
-      //   match_threshold: 0.75
+      const { data: documents, error: error } = await supabase.rpc(
+        "search_documents_v1",
+        {
+          query: searchTerm,
+        }
+      );
+
+      // const { data: documents, error: error } = await supabase.rpc("search_documents_v2", {
+      //   query: searchTerm,
+      //   page: 1,
+      //   page_size: 10,
       // });
-
-      // const { data: results, error } = await supabase.functions.invoke(
-      //   "bright-processor",
-      //   {
-      //     body: { search: searchTerm, page: 1 },
-      //   }
-      // );
-
-      // const response = await fetch(`${url1}/api/semantic_search?search=${searchTerm}&page=1&limit=3`, {
-      //   method: "GET",
-      //   headers: {
-      //     "Content-Type": "application/octet-stream",
-      //   },
-      // });
-
-      // if (!response.ok) {
-      //   throw new Error(`Failed to fetch file: ${response.statusText}`);
-      // }
-      // const _results = await response.json();
-
-
-      // let documents = _results?.results || [];
 
       const searchTime = (performance.now() - startTime) / 1000;
 
       await logSearch(
         searchTerm,
         appContext?.user?.id,
-        documents.length,
+        documents?.length || 0,
         searchTime
       );
 
       if (error) {
         console.error("Search error:", error);
+        toast.error("System Timeout, Please try again!");
+        setRecomendations([]);
+        setLoadingDocuments(false);
       } else {
         setRecomendations(documents || []);
       }
 
+      if (documents?.length == 0) {
+        modal.info({
+          title: 'No Results Found',
+          content: (
+            "Your search did not match any documents. Please try different keywords."
+          ),
+          centered: true
+        });
+      }
+
       setLoadingDocuments(false);
-    }, 500); // Wait 500ms after last keystroke before searching
+
+     
+
+     
+    }, 550); // Wait 500ms after last keystroke before searching
 
     delayedSearch();
 
@@ -1102,6 +1121,7 @@ export default function Home() {
           plan={selectedPlan}
         />
       )}
+      {contextHolder}
 
       {/* Features Section */}
       {/* <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
