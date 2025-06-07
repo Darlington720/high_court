@@ -484,15 +484,15 @@ export default function Home() {
         setRecomendations(documents || []);
       }
 
-      if (documents?.length == 0) {
-        modal.info({
-          title: 'No Results Found',
-          content: (
-            "Your search did not match any documents. Please try different keywords."
-          ),
-          centered: true
-        });
-      }
+      // if (documents?.length == 0) {
+      //   modal.info({
+      //     title: 'No Results Found',
+      //     content: (
+      //       "Your search did not match any documents. Please try different keywords."
+      //     ),
+      //     centered: true
+      //   });
+      // }
 
       setLoadingDocuments(false);
 
